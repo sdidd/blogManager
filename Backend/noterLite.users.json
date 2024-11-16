@@ -1,0 +1,149 @@
+[
+  {
+    "_id": "66ebc6a73194ba282021b33f",
+    "uname": "sdidd",
+    "age": 22,
+    "location": "Pune",
+    "image": "https://th.bing.com/th/id/OIP.A2JDlW2N1DW-t73m0ChQnwAAAA?rs=1&pid=ImgDetMain",
+    "company": "accenture",
+    "status": "success",
+    "data": {
+      "id": 1,
+      "name": "sdidd",
+      "password": "sdidd",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "basic",
+      "quotaUsed": 10,
+      "quotaLimit": 100,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b340",
+    "uname": "john_doe",
+    "age": 28,
+    "location": "Mumbai",
+    "image": "https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?cs=srgb&dl=animal-animal-photography-big-cat-145939.jpg&fm=jpg",
+    "company": "tcs",
+    "status": "success",
+    "data": {
+      "id": 2,
+      "name": "john_doe",
+      "password": "john123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "pro",
+      "quotaUsed": 50,
+      "quotaLimit": 500,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b341",
+    "uname": "jane_smith",
+    "age": 25,
+    "location": "Bangalore",
+    "image": "https://cdn.pixabay.com/photo/2018/02/18/13/10/nature-3162233_960_720.jpg",
+    "company": "infosys",
+    "status": "success",
+    "data": {
+      "id": 3,
+      "name": "jane_smith",
+      "password": "jane123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "premium",
+      "quotaUsed": 200,
+      "quotaLimit": 2000,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b342",
+    "uname": "alice_jones",
+    "age": 30,
+    "location": "Hyderabad",
+    "image": "https://th.bing.com/th/id/OIP.-D5xt6nfX4BGup0qkTmyiAHaFI?rs=1&pid=ImgDetMain",
+    "company": "wipro",
+    "status": "success",
+    "data": {
+      "id": 4,
+      "name": "alice_jones",
+      "password": "alice123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "basic",
+      "quotaUsed": 15,
+      "quotaLimit": 100,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b343",
+    "uname": "charlie_brown",
+    "age": 27,
+    "location": "Delhi",
+    "image": "https://wallup.net/wp-content/uploads/2016/01/202352-animals-macaws-nature-closeup-birds-parrot.jpg",
+    "company": "hcl",
+    "status": "success",
+    "data": {
+      "id": 5,
+      "name": "charlie_brown",
+      "password": "charlie123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "pro",
+      "quotaUsed": 75,
+      "quotaLimit": 500,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b344",
+    "uname": "emma_watson",
+    "age": 26,
+    "location": "Chennai",
+    "image": "https://www.hdwallpaperspulse.com/wp-content/uploads/2013/02/Beautiful-Animal-010.jpg",
+    "company": "techmahindra",
+    "status": "success",
+    "data": {
+      "id": 6,
+      "name": "emma_watson",
+      "password": "emma123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "premium",
+      "quotaUsed": 150,
+      "quotaLimit": 2000,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": "66ebc6a73194ba282021b345",
+    "uname": "oliver_twist",
+    "age": 24,
+    "location": "Kolkata",
+    "image": "https://www.pixelstalk.net/wp-content/uploads/2016/03/Wild-Animals-Wallpaper-HD.jpg",
+    "company": "cognizant",
+    "status": "success",
+    "data": {
+      "id": 7,
+      "name": "oliver_twist",
+      "password": "oliver123",
+      "__v": 0
+    },
+    "subscription": {
+      "tier": "basic",
+      "quotaUsed": 5,
+      "quotaLimit": 100,
+      "lastReset": "2024-11-01T00:00:00Z"
+    }
+  }
+]

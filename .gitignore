@@ -1,2 +1,2 @@
-Backend\node_modules
-exam-app\node_modules
+exam-app/node_modules/*
+Backend/node_modules/*
