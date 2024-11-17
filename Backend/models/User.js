@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema({
   location: String,
   image: String,
   branch: String,
-  role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true }, // Link to the Role model,
+  standard: Number,
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true }, // Link to the Role model
+  email: { type: String, required: true, unique: true }, // Add email
+  isVerified: { type: Boolean, default: false }, // Add isVerified flag
   data: {
     id: { type: Number, required: true },
     name: { type: String, required: true },
@@ -36,6 +39,7 @@ const userSchema = new mongoose.Schema({
     lastDate: Date,
   },
 });
+
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {

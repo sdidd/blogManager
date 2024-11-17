@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../api';
 
 const Login = () => {
@@ -48,6 +48,7 @@ const Login = () => {
           />
         </div>
         <button type="submit">Login</button>
+        <Link to='/register'>New Student? Register Here</Link>
       </form>
     </div>
   );
