@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api";
 
@@ -15,7 +15,47 @@ const Register = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const navigate = useNavigate();
+
+  // Validate username in real time
+  useEffect(() => {
+    const validateUsername = async () => {
+      if (!formData.username) {
+        setUsernameError(""); // Clear error if empty
+        return;
+      }
+      try {
+        await API.get(`/auth/check-username/${formData.username}`);
+        setUsernameError(""); // Username is available
+      } catch (err) {
+        setUsernameError(err.response?.data?.error || "Error checking username");
+      }
+    };
+
+    const debounce = setTimeout(validateUsername, 500); // Debounce API calls
+    return () => clearTimeout(debounce);
+  }, [formData.username]);
+
+  // Validate email in real time
+  useEffect(() => {
+    const validateEmail = async () => {
+      if (!formData.email) {
+        setEmailError(""); // Clear error if empty
+        return;
+      }
+      try {
+        await API.get(`/auth/check-email/${formData.email}`);
+        setEmailError(""); // Email is available
+      } catch (err) {
+        setEmailError(err.response?.data?.error || "Error checking email");
+      }
+    };
+
+    const debounce = setTimeout(validateEmail, 500); // Debounce API calls
+    return () => clearTimeout(debounce);
+  }, [formData.email]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,6 +64,12 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Prevent submission if validation errors exist
+    if (usernameError || emailError) {
+      setError("Fix errors before submitting");
+      return;
+    }
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
@@ -78,6 +124,7 @@ const Register = () => {
             className="form-control"
             required
           />
+          {usernameError && <p style={{ color: "red", fontSize: "0.9em" }}>{usernameError}</p>}
         </div>
         <div className="mb-3">
           <label>Email:</label>
@@ -89,6 +136,7 @@ const Register = () => {
             className="form-control"
             required
           />
+          {emailError && <p style={{ color: "red", fontSize: "0.9em" }}>{emailError}</p>}
         </div>
         <div className="mb-3">
           <label>Password:</label>
@@ -114,7 +162,13 @@ const Register = () => {
         </div>
         <div className="mb-3">
           <label>Age:</label>
-          <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-control" />
+          <input
+            type="number"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            className="form-control"
+          />
         </div>
         <div className="mb-3">
           <label>Full Name:</label>
@@ -129,29 +183,25 @@ const Register = () => {
         </div>
         <div className="mb-3">
           <label>Branch</label>
-          <div className="mb-3">
-            <select name="branch" value={formData.branch} onChange={handleChange} className="form-select" required>
-              <option value="" disabled>
-                Select your branch
-              </option>
-              <option value="mhtcet">MHT-CET</option>
-              <option value="jee">JEE</option>
-              <option value="neet">NEET</option>
-              <option value="law">Law</option>
-            </select>
-          </div>
+          <select name="branch" value={formData.branch} onChange={handleChange} className="form-select" required>
+            <option value="" disabled>
+              Select your branch
+            </option>
+            <option value="mhtcet">MHT-CET</option>
+            <option value="jee">JEE</option>
+            <option value="neet">NEET</option>
+            <option value="law">Law</option>
+          </select>
         </div>
         <div className="mb-3">
           <label>Standard:</label>
-          <div className="mb-3">
-            <select name="standard" value={formData.standard} onChange={handleChange} className="form-control" required>
-              <option value="" disabled>
-                Select your standard
-              </option>
-              <option value="11">11<sup>th</sup> Standard</option>
-              <option value="12">12<sup>th</sup> Standard</option>
-            </select>
-          </div>
+          <select name="standard" value={formData.standard} onChange={handleChange} className="form-control" required>
+            <option value="" disabled>
+              Select your standard
+            </option>
+            <option value="11">11<sup>th</sup> Standard</option>
+            <option value="12">12<sup>th</sup> Standard</option>
+          </select>
         </div>
         <button type="submit" className="btn btn-primary">
           Register

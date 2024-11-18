@@ -94,6 +94,33 @@ router.get('/verifyToken', verifyToken, (req, res) => {
   res.status(200).json({ message: 'Token is valid', user: req.user });
 });
 
+// Check if username exists
+router.get('/check-username/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (user) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+    res.status(200).json({ message: "Username available" });
+  } catch (err) {
+    res.status(500).json({ error: "Error checking username" });
+  }
+});
+
+// Check if email exists
+router.get('/check-email/:email', async (req, res) => {
+  try {
+    const user = await User.findOne({ "data.email": req.params.email });
+    if (user) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+    res.status(200).json({ message: "Email available" });
+  } catch (err) {
+    res.status(500).json({ error: "Error checking email" });
+  }
+});
+
+
 // Logout Route
 router.post('/logout', (req, res) => {
   res.clearCookie('token');
