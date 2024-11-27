@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
-const express = require("express");
+const mongoose = require("mongoose");const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const Role = require('./Role')
+const Role = require("./Role");
 
 const mongoUri = process.env.MONGO_URI;
 
@@ -18,28 +17,28 @@ mongoose
 
 // Define the User Schema
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  age: Number,
-  location: String,
-  image: String,
-  branch: String,
-  standard: Number,
-  role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true }, // Link to the Role model
-  email: { type: String, required: true, unique: true }, // Add email
-  isVerified: { type: Boolean, default: false }, // Add isVerified flag
+  username: { type: String, required: true, default: "NewUser" },
+  age: { type: Number, default: 18 },
+  location: { type: String, default: "Unknown" },
+  image: { type: String, default: "default-profile.jpg" },
+  branch: { type: String, default: "General" },
+  standard: { type: Number, default: 11 },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true }, // Role should be explicitly set, no default
+  email: { type: String, required: true, unique: true }, // Cannot have a default as it's unique and required
+  isVerified: { type: Boolean, default: false },
+  tokenVersion: { type: Number, default: 0 }, // Increment this to invalidate refresh tokens
   data: {
-    id: { type: Number, required: true },
-    name: { type: String, required: true },
-    password: { type: String, required: true }, // Make password required
+    id: { type: Number, required: true, default: 0 }, // Default ID, usually generated server-side
+    name: { type: String, required: true, default: "Default Name" },
+    password: { type: String, required: true, default: "123456" }, // Use a hash or placeholder password in production
   },
   fees: {
-    paid: Boolean,
-    remaining: Number,
-    total: Number,
-    lastDate: Date,
+    paid: { type: Boolean, default: false },
+    remaining: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
+    lastDate: { type: Date, default: () => new Date() }, // Default to current date
   },
 });
-
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
@@ -55,4 +54,3 @@ userSchema.methods.verifyPassword = async function (password) {
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
-

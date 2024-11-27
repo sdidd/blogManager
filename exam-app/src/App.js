@@ -1,10 +1,20 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { refreshAccessToken } from "./utils/refreshToken";
 // import API from "./api";
 
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // //refresh token logic
+  // useEffect(() => {
+  //   const initAuth = async () => {
+  //     await refreshAccessToken();
+  //   };
+
+  //   initAuth();
+  // }, [navigate]);
 
   useEffect(() => {
     const validateToken = async () => {

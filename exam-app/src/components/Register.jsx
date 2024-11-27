@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";import { Link, useNavigate } from "react-router-dom";
 import API from "../api";
 
 const Register = () => {
@@ -92,10 +91,23 @@ const Register = () => {
 
     try {
       const defaultRoleId = "64a3fcd56e913f1a5ef9e001"; // Default Role ID
-      const response = await API.post("/auth/register", {
-        ...formData,
+
+      // Restructure the payload to match the schema
+      const payload = {
+        username: formData.username,
+        age: formData.age,
+        branch: formData.branch,
+        standard: formData.standard,
+        email: formData.email,
         role: defaultRoleId, // Assign default role
-      });
+        data: {
+          name: formData.name,
+          password: formData.password,
+        },
+      };
+
+      console.log(payload);
+      const response = await API.post("/auth/register", payload);
 
       if (response.status === 201) {
         setSuccess("Registration successful! Please check your email for verification.");
@@ -162,13 +174,7 @@ const Register = () => {
         </div>
         <div className="mb-3">
           <label>Age:</label>
-          <input
-            type="number"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            className="form-control"
-          />
+          <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-control" />
         </div>
         <div className="mb-3">
           <label>Full Name:</label>
@@ -199,8 +205,12 @@ const Register = () => {
             <option value="" disabled>
               Select your standard
             </option>
-            <option value="11">11<sup>th</sup> Standard</option>
-            <option value="12">12<sup>th</sup> Standard</option>
+            <option value="11">
+              11<sup>th</sup> Standard
+            </option>
+            <option value="12">
+              12<sup>th</sup> Standard
+            </option>
           </select>
         </div>
         <button type="submit" className="btn btn-primary">

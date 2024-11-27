@@ -47,6 +47,7 @@ router.post(
   }
 );
 
+//Delete permission
 router.delete(
   "/roles/:roleId/permissions",
   authMiddleware,
