@@ -8,6 +8,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
+const homeRoutes = require('./routes/home')
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/home', homeRoutes);
 
 // Fallback route to redirect to login if unauthorized
 app.use((req, res, next) => {
