@@ -1,18 +1,23 @@
 import API from "../api";
-// src/utils/auth.js
+
 export const refreshAccessToken = async () => {
   try {
-    const response = await API.post("/auth/refresh-token");
-    const data = await response.json();
-    if (response.ok) {
+    const refreshToken = localStorage.getItem("refreshToken"); // Retrieve stored refresh token
+    if (!refreshToken) throw new Error("No refresh token found");
+
+    const response = await API.post("/auth/refresh-token", {
+      refreshToken, // Include refresh token in the request body
+    });
+
+    if (response.status === 200) {
+      const data = await response.data;
       localStorage.setItem("token", data.token); // Update access token
       return data.token;
     } else {
-      // Redirect to login if refresh fails
-      window.location.href = "/login";
+      throw new Error("Failed to refresh token");
     }
   } catch (error) {
     console.error("Error refreshing token:", error);
-    window.location.href = "/login"; // Redirect if an error occurs
+    window.location.href = "/login"; // Redirect if refresh fails
   }
 };

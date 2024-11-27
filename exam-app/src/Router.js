@@ -10,6 +10,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import RoleManagement from "./components/admin/RoleManagement";
 import roles from "./utils/roles";
+import Home from "./components/Home";
 
 const Router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const Router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "", element: <Home /> },
       {
         path: "dashboard",
         element: <PrivateRoute />, // Protected general dashboard
