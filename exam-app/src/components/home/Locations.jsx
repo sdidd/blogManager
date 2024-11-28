@@ -3,6 +3,19 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import API from "../../api";
 
+// Fix for missing marker icons in Leaflet
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import markerRetina from "leaflet/dist/images/marker-icon-2x.png";
+
+// Configure the default Leaflet marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerRetina,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 const Locations = () => {
   const [locations, setLocations] = useState([]);
   const [userLocation, setUserLocation] = useState(null);

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";import { Link, useNavigate } from "react-router-dom";
+import "../css/register.css";
+import { IoHome } from "react-icons/io5";
+
 import API from "../api";
 
 const Register = () => {
@@ -121,105 +124,115 @@ const Register = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h1>Register</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      <form onSubmit={handleRegister}>
-        <div className="mb-3">
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="form-control"
-            required
-          />
-          {usernameError && <p style={{ color: "red", fontSize: "0.9em" }}>{usernameError}</p>}
-        </div>
-        <div className="mb-3">
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="form-control"
-            required
-          />
-          {emailError && <p style={{ color: "red", fontSize: "0.9em" }}>{emailError}</p>}
-        </div>
-        <div className="mb-3">
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Age:</label>
-          <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-control" />
-        </div>
-        <div className="mb-3">
-          <label>Full Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Branch</label>
-          <select name="branch" value={formData.branch} onChange={handleChange} className="form-select" required>
-            <option value="" disabled>
-              Select your branch
-            </option>
-            <option value="mhtcet">MHT-CET</option>
-            <option value="jee">JEE</option>
-            <option value="neet">NEET</option>
-            <option value="law">Law</option>
-          </select>
-        </div>
-        <div className="mb-3">
-          <label>Standard:</label>
-          <select name="standard" value={formData.standard} onChange={handleChange} className="form-control" required>
-            <option value="" disabled>
-              Select your standard
-            </option>
-            <option value="11">
-              11<sup>th</sup> Standard
-            </option>
-            <option value="12">
-              12<sup>th</sup> Standard
-            </option>
-          </select>
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Register
-        </button>
-        <Link className="btn btn-dark" to="/login">
-          Go Back
-        </Link>
-      </form>
+    <div className="">
+      {/* Vertical Bar */}
+      <Link to="/" className="vertical-bar">
+        <IoHome />
+        <span>Home</span>
+      </Link>
+
+      <div className="container mt-4 col-sm-4">
+        <h1 className="text-center">Register</h1>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {success && <p style={{ color: "green" }}>{success}</p>}
+        <form onSubmit={handleRegister}>
+          <div className="mb-3">
+            <label>Username:</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+            {usernameError && <p style={{ color: "red", fontSize: "0.9em" }}>{usernameError}</p>}
+          </div>
+          <div className="mb-3">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+            {emailError && <p style={{ color: "red", fontSize: "0.9em" }}>{emailError}</p>}
+          </div>
+          <div className="mb-3">
+            <label>Password:</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label>Confirm Password:</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label>Age:</label>
+            <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-control" />
+          </div>
+          <div className="mb-3">
+            <label>Full Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label>Branch</label>
+            <select name="branch" value={formData.branch} onChange={handleChange} className="form-select" required>
+              <option value="" disabled>
+                Select your branch
+              </option>
+              <option value="mhtcet">MHT-CET</option>
+              <option value="jee">JEE</option>
+              <option value="neet">NEET</option>
+              <option value="law">Law</option>
+            </select>
+          </div>
+          <div className="mb-3">
+            <label>Standard:</label>
+            <select name="standard" value={formData.standard} onChange={handleChange} className="form-select" required>
+              <option value="" disabled>
+                Select your standard
+              </option>
+              <option value="11">
+                11<sup>th</sup> Standard
+              </option>
+              <option value="12">
+                12<sup>th</sup> Standard
+              </option>
+            </select>
+          </div>
+          <div className="d-flex justify-content-center gap-3">
+            <button type="submit" className="btn btn-primary">
+              Register
+            </button>
+            <Link className="btn btn-outline-secondary" to="/login">
+              Go Back
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

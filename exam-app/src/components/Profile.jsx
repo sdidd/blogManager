@@ -3,21 +3,20 @@ import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 const Profile = () => {
-  const [user, setUser] = useState(null); // Use `null` for better loading handling
+  const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login"); // Redirect to Login
+    navigate("/login");
   };
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await API.get("/user/profile");
-        console.log(response.data);
-        setUser(response.data); // Set the fetched user data
+        setUser(response.data);
       } catch (err) {
         if (err.response?.status === 401) {
           console.error("Unauthorized: Redirecting to login");
@@ -32,16 +31,16 @@ const Profile = () => {
   }, [navigate]);
 
   if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
+    return <div className="text-danger text-center mt-4">{error}</div>;
   }
 
   if (!user) {
-    return <p>Loading...</p>;
+    return <p className="text-center mt-4">Loading...</p>;
   }
 
   return (
-    <div className="container mt-4">
-      {/* Logout Button at Top Right */}
+    <div className="container mt-5">
+      {/* Logout Button */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h3>User Profile</h3>
         <button className="btn btn-danger" onClick={handleLogout}>
@@ -49,29 +48,87 @@ const Profile = () => {
         </button>
       </div>
 
-      {/* Profile Information */}
-      <div className="card p-4 shadow">
-        <p>
-          <strong>Username:</strong> {user.username}
-        </p>
-        <p>
-          <strong>Age:</strong> {user.age}
-        </p>
-        <p>
-          <strong>Location:</strong> {user.location}
-        </p>
-        <p>
-          <strong>Branch:</strong> {user.branch}
-        </p>
-        <p>
-          <strong>Role Name:</strong> {user.role?.name || "N/A"}
-        </p>
-        <p>
-          <strong>Permissions:</strong>{" "}
-          {user.role?.permissions?.length
-            ? user.role.permissions.join(", ")
-            : "No permissions assigned"}
-        </p>
+      {/* Profile Card */}
+      <div className="card shadow-lg p-4">
+        <div className="d-flex align-items-center mb-4">
+          <img
+            src={user.image || "default-profile.png"}
+            alt={`${user.username}'s profile`}
+            className="rounded-circle me-3"
+            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+          />
+          <h4 className="mb-0">{user.data.name}</h4>
+        </div>
+        <hr />
+
+        {/* Basic Info */}
+        <h5>Basic Information</h5>
+        <ul className="list-group mb-4">
+          <li className="list-group-item">
+            <strong>Username:</strong> {user.username}
+          </li>
+          <li className="list-group-item">
+            <strong>Email:</strong> {user.email}
+          </li>
+          <li className="list-group-item">
+            <strong>Age:</strong> {user.age}
+          </li>
+          <li className="list-group-item">
+            <strong>Location:</strong> {user.location}
+          </li>
+          <li className="list-group-item">
+            <strong>Branch:</strong> {user.branch}
+          </li>
+          <li className="list-group-item">
+            <strong>Standard:</strong> {user.standard}
+          </li>
+        </ul>
+
+        {/* Role & Permissions */}
+        <h5>Role & Permissions</h5>
+        <ul className="list-group mb-4">
+          <li className="list-group-item">
+            <strong>Role:</strong> {user.role?.name || "N/A"}
+          </li>
+          <li className="list-group-item">
+            <strong>Permissions:</strong>{" "}
+            {user.role?.permissions?.length
+              ? user.role.permissions.join(", ")
+              : "No permissions assigned"}
+          </li>
+        </ul>
+
+        {/* Account Details */}
+        <h5>Account Details</h5>
+        <ul className="list-group mb-4">
+          <li className="list-group-item">
+            <strong>ID:</strong> {user._id}
+          </li>
+          <li className="list-group-item">
+            <strong>Token Version:</strong> {user.tokenVersion}
+          </li>
+          <li className="list-group-item">
+            <strong>Verified:</strong> {user.isVerified ? "Yes" : "No"}
+          </li>
+        </ul>
+
+        {/* Fees Information */}
+        <h5>Fees Information</h5>
+        <ul className="list-group">
+          <li className="list-group-item">
+            <strong>Paid:</strong> {user.fees.paid ? "Yes" : "No"}
+          </li>
+          <li className="list-group-item">
+            <strong>Remaining:</strong> ${user.fees.remaining}
+          </li>
+          <li className="list-group-item">
+            <strong>Total:</strong> ${user.fees.total}
+          </li>
+          <li className="list-group-item">
+            <strong>Last Date:</strong>{" "}
+            {new Date(user.fees.lastDate).toLocaleDateString()}
+          </li>
+        </ul>
       </div>
     </div>
   );
