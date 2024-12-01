@@ -25,6 +25,6 @@ module.exports = emailUser = async (to, subject, text) => {
     const info = await transporter.sendMail(mailOptions);
     console.log(`Email sent: ${info.messageId}`);
   } catch (error) {
-    console.log(error.code);
+    console.log(error);
   }
 };

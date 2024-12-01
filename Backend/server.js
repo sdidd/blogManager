@@ -38,6 +38,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err) {
+    return res.status(500).json({ error: "Internal server error." });
+  }
+  next();
+});
 
 // Start Server
 app.listen(4000, () => console.log('Server running on http://localhost:4000'));

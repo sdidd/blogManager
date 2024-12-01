@@ -1,4 +1,5 @@
-import React from "react";import { createBrowserRouter } from "react-router-dom";
+import React from "react";
+import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Error from "./components/Error";
 import Login from "./components/Login";
@@ -11,6 +12,7 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import RoleManagement from "./components/admin/RoleManagement";
 import roles from "./utils/roles";
 import Home from "./components/Home";
+import UserManagement from "./components/admin/UserManagement";
 
 const Router = createBrowserRouter([
   {
@@ -44,7 +46,10 @@ const Router = createBrowserRouter([
                   {
                     path: "",
                     element: <AdminDashboard />,
-                    children: [{ path: "role-management", element: <RoleManagement /> }],
+                    children: [
+                      { path: "role-management", element: <RoleManagement /> },
+                      { path: "user-management", element: <UserManagement /> },
+                    ],
                   },
                 ],
               },

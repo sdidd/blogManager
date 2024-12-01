@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const emailUser = require("../utils/emailUtils");
 const router = express.Router();
 const { generateToken, verifyToken, generateRefreshToken } = require("../utils/jwtUtils");
+const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config();
 
 // Register Route
@@ -18,7 +19,7 @@ router.post("/register", async (req, res) => {
     }
 
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    // const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = new User({
       username,
       age,
@@ -28,7 +29,7 @@ router.post("/register", async (req, res) => {
       role,
       email,
       fees,
-      data: { ...data, password: hashedPassword },
+      data: { ...data },
     });
     await user.save();
 
@@ -65,6 +66,8 @@ router.post("/login", async (req, res) => {
 
   try {
     const user = await User.findOne({ username }).populate("role");
+    console.log(user);
+    
 
     if (!user) {
       return res.status(401).json({ error: "Invalid username or password" });
@@ -76,7 +79,7 @@ router.post("/login", async (req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.data.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: "Password is not valid" });
     }
 
     const token = generateToken(user);
@@ -100,7 +103,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Token Validation Route (for protected routes)
-router.get("/verifyToken", verifyToken, (req, res) => {
+router.get("/verifyToken", authMiddleware, (req, res) => {
   res.status(200).json({ message: "Token is valid", user: req.user });
 });
 

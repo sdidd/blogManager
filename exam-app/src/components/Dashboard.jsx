@@ -2,16 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import roles from "../utils/roles";
 import API from "../api";
+import Logout from "./Logout";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login"); // Redirect to Login
-  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -72,12 +68,7 @@ const Dashboard = () => {
                 </>
               )}
               <li>
-                <button
-                  className="dropdown-item text-danger"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
+                <Logout inside="dropdown" />
               </li>
               <li>
                 <hr className="dropdown-divider" />
