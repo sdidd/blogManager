@@ -2,13 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
 require('dotenv').config();
 
 // Import Routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
-const homeRoutes = require('./routes/home')
+const homeRoutes = require('./routes/home');
+const settingsRoute = require('./routes/settings');
 
 const app = express();
 
@@ -22,6 +24,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/home', homeRoutes);
+app.use('/settings/admin', settingsRoute)
 
 // Fallback route to redirect to login if unauthorized
 app.use((req, res, next) => {
