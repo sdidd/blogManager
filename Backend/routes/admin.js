@@ -6,6 +6,7 @@ const roles = require("../models/roles");
 const User = require("../models/User");
 const Result = require("../models/Result");
 const Role = require("../models/Role");
+const bcrypt = require('bcrypt')
 
 const router = express.Router();
 
@@ -149,6 +150,116 @@ router.delete(
       res.status(200).json({ message: "Role deleted successfully" });
     } catch (err) {
       res.status(500).json({ error: "Failed to delete role", details: err.message });
+    }
+  }
+);
+
+/**
+ * GET /api/admin/users
+ * Fetch all users
+ */
+router.get(
+  "/users",
+  authMiddleware,
+  permissionMiddleware(["manage:users"]),
+  async (req, res) => {
+    try {
+      const users = await User.find({}).populate("role");
+      res.status(200).json({ success: true, users });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to fetch users" });
+    }
+  }
+);
+
+/**
+ * PUT /api/admin/users/:userId/role
+ * Update user role
+ */
+router.put(
+  "/users/:userId/role",
+  authMiddleware,
+  permissionMiddleware(["manage:users"]),
+  async (req, res) => {
+    const { userId } = req.params;
+    const { roleId } = req.body;
+
+    if (!roleId) {
+      return res.status(400).json({ success: false, error: "Role ID is required" });
+    }
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, error: "User not found" });
+      }
+
+      user.role = roleId;
+      await user.save();
+
+      res.status(200).json({ success: true, message: "User role updated successfully" });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to update user role" });
+    }
+  }
+);
+
+/**
+ * POST /api/admin/users/:userId/reset-password
+ * Reset user password
+ */
+router.post(
+  "/users/:userId/reset-password",
+  authMiddleware,
+  permissionMiddleware(["manage:users"]),
+  async (req, res) => {
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "Password must be at least 6 characters long",
+      });
+    }
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, error: "User not found" });
+      }
+
+      user.data.password = newPassword;
+      await user.save();
+
+      res.status(200).json({ success: true, message: "Password reset successfully" });
+    } catch (error) {
+      //console.log(error);
+      res.status(400).json({ success: false, error: "Failed to reset password" });
+    }
+  }
+);
+
+/**
+ * DELETE /api/admin/users/:userId
+ * Delete a user
+ */
+router.delete(
+  "/users/:userId",
+  authMiddleware,
+  permissionMiddleware(["manage:users"]),
+  async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+      const user = await User.findByIdAndDelete(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, error: "User not found" });
+      }
+
+      res.status(200).json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Failed to delete user" });
     }
   }
 );

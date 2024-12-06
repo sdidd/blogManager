@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-// import API from "./api";
+import API from "./api";
 
 const App = () => {
   const navigate = useNavigate();
@@ -11,6 +11,10 @@ const App = () => {
       try {
         const token = localStorage.getItem("token");
         console.log("[DEBUG]" + location.pathname);
+        if (!token) {
+          const response = await API.post("/auth/refresh-token");
+          localStorage.setItem('token', response.data.token);
+        }
         if (token) {
           // const token = localStorage.getItem("token");
           // const response = await API.get("/auth/verifyToken");

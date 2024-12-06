@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from "react";import { Link } from "react-router-dom";
+import Locations from "./home/Locations";
 
 const Home = () => {
   return (
@@ -52,10 +52,7 @@ const Home = () => {
       <header className="bg-primary text-white text-center py-5">
         <div className="container">
           <h1 className="display-4 fw-bold">Welcome to CoachingPro</h1>
-          <p className="lead">
-            Transforming education with experienced mentors and state-of-the-art
-            facilities.
-          </p>
+          <p className="lead">Transforming education with experienced mentors and state-of-the-art facilities.</p>
           <a href="#about" className="btn btn-light btn-lg">
             Learn More
           </a>
@@ -67,42 +64,21 @@ const Home = () => {
         <div className="container text-center">
           <h2 className="fw-bold mb-4">About Us</h2>
           <p className="lead">
-            CoachingPro is dedicated to providing top-notch coaching services
-            for students of all ages. With a team of experienced educators and
-            a proven track record of success, we help students achieve their
-            dreams and unlock their potential.
+            CoachingPro is dedicated to providing top-notch coaching services for students of all ages. With a team of
+            experienced educators and a proven track record of success, we help students achieve their dreams and unlock
+            their potential.
           </p>
         </div>
       </section>
 
       {/* Locations Section */}
-      <section id="locations" className="bg-light py-5">
-        <div className="container text-center">
-          <h2 className="fw-bold mb-4">Our Locations</h2>
-          <div className="row">
-            <div className="col-md-4">
-              <h5>Downtown Center</h5>
-              <p>123 Main Street, Cityville</p>
-            </div>
-            <div className="col-md-4">
-              <h5>Uptown Branch</h5>
-              <p>456 Elm Street, Metropolis</p>
-            </div>
-            <div className="col-md-4">
-              <h5>Suburban Campus</h5>
-              <p>789 Oak Avenue, Suburbia</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Locations />
 
       {/* Contact Us Section */}
       <section id="contact" className="py-5">
         <div className="container text-center">
           <h2 className="fw-bold mb-4">Contact Us</h2>
-          <p className="lead">
-            Have questions? Reach out to us, and we'll be happy to assist you!
-          </p>
+          <p className="lead">Have questions? Reach out to us, and we'll be happy to assist you!</p>
           <div className="row justify-content-center">
             <div className="col-md-6">
               <form>

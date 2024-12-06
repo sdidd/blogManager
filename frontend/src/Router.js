@@ -11,6 +11,8 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import RoleManagement from "./components/admin/RoleManagement";
 import roles from "./utils/roles";
 import Home from "./components/Home";
+import UserManagement from "./components/admin/UserManagement";
+import Settings from "./components/admin/Settings";
 
 const Router = createBrowserRouter([
   {
@@ -39,12 +41,17 @@ const Router = createBrowserRouter([
               },
               {
                 path: "admindashboard",
-                element: <PrivateRoute allowedRoles={[roles.admin]} />, // Protected admin dashboard
+                element: <PrivateRoute requiredPermissions = {["view:admindashboard"]} />, // Protected admin dashboard
                 children: [
                   {
                     path: "",
                     element: <AdminDashboard />,
-                    children: [{ path: "role-management", element: <RoleManagement /> }],
+                    children: [
+                      { path: "role-management", element: <RoleManagement /> },
+                      { path: "user-management", element: <UserManagement /> },
+                      { path: "settings", element: <Settings /> },
+                    ],
+                    errorElement: <Error />,
                   },
                 ],
               },

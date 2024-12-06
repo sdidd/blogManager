@@ -4,7 +4,10 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const emailUser = require("../utils/emailUtils");
 const router = express.Router();
-const { generateToken, verifyToken, generateRefreshToken } = require("../utils/jwtUtils");
+const { generateToken, generateRefreshToken } = require("../utils/jwtUtils");
+const authMiddleware = require("../middleware/authMiddleware");
+const AuditTrail = require("../models/AuditTrail");
+const getRedisClient = require("../utils/redis/redisConfig");
 require("dotenv").config();
 
 // Register Route
@@ -17,8 +20,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Name and password are required in data object" });
     }
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = new User({
       username,
       age,
@@ -28,7 +29,7 @@ router.post("/register", async (req, res) => {
       role,
       email,
       fees,
-      data: { ...data, password: hashedPassword },
+      data: { ...data },
     });
     await user.save();
 
@@ -36,13 +37,11 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" } // Token valid for 1 hour
+      { expiresIn: "1h" }
     );
 
-    // Construct the verification link
     const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${token}`;
 
-    // Send verification email
     await emailUser(
       user.email,
       "Email Verification",
@@ -71,17 +70,29 @@ router.post("/login", async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res.status(301).json({ error: "First verify your account with the link in email!!" });
+      return res.status(403).json({ error: "Please verify your account via email" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.data.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: "Invalid password" });
     }
 
-    const token = generateToken(user);
     // Generate tokens
+    const token = generateToken(user);
     const refreshToken = generateRefreshToken(user);
+
+    // Store session in Redis (using hash)
+    const RedisClient = getRedisClient();
+    const sessionData = {
+      userId: user._id,
+      timestamp: Date.now(),
+    };
+
+    const sessionDataStr = JSON.stringify(sessionData);
+
+    await RedisClient.hSet(`session:${token}`, "data", sessionDataStr);
+    await RedisClient.expire(`session:${token}`, parseInt(process.env.JWT_EXPIRATION || "3600", 10));
 
     // Send refresh token as HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
@@ -90,79 +101,80 @@ router.post("/login", async (req, res) => {
       sameSite: "strict",
     });
 
-    // Send token in response (you can also send it as a cookie if preferred)
-    const message = "Login has been detected on " + new Date() + "please be aware.";
-    emailUser(user.email, "Login has been recorded", message);
-    res.status(200).json({ message: "Login successful!", token });
+    // Log login action
+    await AuditTrail.create({
+      userId: user._id,
+      type: "LOGIN",
+      details: `User logged in with email ${username}`,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+      token,
+    });
+
+    res.status(200).json({ message: "Login successful", token });
   } catch (err) {
-    res.status(400).json({ error: "Error during login", details: err.message });
+    console.error("[ERROR] Login failed:", err.message);
+    res.status(500).json({ error: "Login failed", details: err.message });
+  }
+});
+
+// Logout Route (Terminate Session)
+router.post("/logout", authMiddleware, async (req, res) => {
+  const token = req.token;
+
+  try {
+    // const RedisClient = getRedisClient();
+
+    // // Remove session from Redis
+    // await RedisClient.hDel(`session:${token}`);
+
+    // // Blacklist the token to revoke it (add it to the blacklist in Redis)
+    // await RedisClient.set(`blacklist:${token}`, "true", { EX: parseInt(process.env.JWT_EXPIRATION || "3600", 10) });
+
+    // Clear refresh token cookie
+    res.clearCookie("refreshToken");
+
+    // Log logout action in AuditTrail
+    await AuditTrail.create({
+      userId: req.user.id,
+      type: "LOGOUT",
+      token: token,
+      details: "User logged out",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("[ERROR] Logout failed:", err.message);
+    res.status(500).json({ error: "Logout failed" });
   }
 });
 
 // Token Validation Route (for protected routes)
-router.get("/verifyToken", verifyToken, (req, res) => {
+router.get("/verifyToken", authMiddleware, async (req, res) => {
   res.status(200).json({ message: "Token is valid", user: req.user });
 });
 
-// Email Verification Route
-router.get("/verify-email", async (req, res) => {
-  const { token } = req.query;
-
-  if (!token) {
-    return res.status(400).json({ error: "Verification token is missing" });
-  }
-
+// Get User Permissions Route
+router.get("/getPermissions", authMiddleware, async (req, res) => {
   try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Find the user and update the `isVerified` field
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(req.user.id).populate("role");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (user.isVerified) {
-      return res.status(400).json({ error: "User is already verified" });
-    }
-
-    user.isVerified = true;
-    await user.save();
-
-    res.status(200).json({ message: "Email verified successfully!" });
+    // Extract permissions from the user's role
+    const permissions = user.role?.permissions || [];
+    res.status(200).json({ permissions });
   } catch (err) {
-    res.status(400).json({ error: "Invalid or expired token", details: err.message });
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 });
 
-// Check if username exists
-router.get("/check-username/:username", async (req, res) => {
-  try {
-    const user = await User.findOne({ username: req.params.username });
-    if (user) {
-      return res.status(400).json({ error: "Username already exists" });
-    }
-    res.status(200).json({ message: "Username available" });
-  } catch (err) {
-    res.status(500).json({ error: "Error checking username" });
-  }
-});
 
-// Check if email exists
-router.get("/check-email/:email", async (req, res) => {
-  try {
-    const user = await User.findOne({ "data.email": req.params.email });
-    if (user) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
-    res.status(200).json({ message: "Email available" });
-  } catch (err) {
-    res.status(500).json({ error: "Error checking email" });
-  }
-});
-
+// Refresh Token Route
 router.post("/refresh-token", async (req, res) => {
-  const refreshToken = req.cookies.refreshToken; // Retrieve refresh token from cookies
+  const refreshToken = req.cookies.refreshToken;
+
   if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
 
   try {
@@ -185,18 +197,10 @@ router.post("/refresh-token", async (req, res) => {
       sameSite: "strict",
     });
 
-    // Send new access token
     res.status(200).json({ token });
   } catch (err) {
     res.status(401).json({ error: "Invalid or expired refresh token", details: err.message });
   }
-});
-
-// Logout Route
-router.post("/logout", (req, res) => {
-  // Clear refresh token cookie
-  res.clearCookie("refreshToken");
-  res.status(200).json({ message: "Logged out successfully!" });
 });
 
 module.exports = router;
