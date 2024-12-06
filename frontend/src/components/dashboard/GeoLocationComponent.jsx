@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import interact from 'interactjs';
 
 const GeoLocationComponent = () => {
@@ -23,27 +22,40 @@ const GeoLocationComponent = () => {
 
   const getGeoData = async () => {
     setLoading(true);
-    const res = await fetch('/api/dashboard/geolocation');
-    const data = await res.json();
-    setGeoData(data);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/dashboard/geolocation');
+      const data = await res.json();
+      setGeoData(data.geolocation);
+    } catch (err) {
+      console.error('Error fetching geolocation data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Card className="geo-card p-3">
-      <Card.Body>
-        <Card.Title>Geolocation Information</Card.Title>
-        <Button variant="primary" onClick={getGeoData}>Get Location</Button>
-        {loading ? <p>Loading...</p> : (
+    <div className="card geo-card p-3 shadow">
+      <div className="card-body">
+        <h5 className="card-title">Geolocation Information</h5>
+        <button className="btn btn-primary mb-3" onClick={getGeoData}>
+          Get Location
+        </button>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           geoData && (
             <div>
-              <p><strong>IP:</strong> {geoData.ip}</p>
-              <p><strong>Location:</strong> {geoData.city}, {geoData.country}</p>
+              <p>
+                <strong>IP:</strong> {geoData.ip}
+              </p>
+              <p>
+                <strong>Location:</strong> {geoData.city}, {geoData.country_name}
+              </p>
             </div>
           )
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
 

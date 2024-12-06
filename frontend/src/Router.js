@@ -41,7 +41,7 @@ const Router = createBrowserRouter([
               },
               {
                 path: "admindashboard",
-                element: <PrivateRoute allowedRoles={[roles.admin]} />, // Protected admin dashboard
+                element: <PrivateRoute requiredPermissions = {["view:admindashboard"]} />, // Protected admin dashboard
                 children: [
                   {
                     path: "",

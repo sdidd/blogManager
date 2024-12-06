@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import interact from 'interactjs';
 
 const NewsComponent = () => {
@@ -23,30 +22,45 @@ const NewsComponent = () => {
 
   const getNewsData = async () => {
     setLoading(true);
-    const res = await fetch('/api/dashboard/news');
-    const data = await res.json();
-    setNewsData(data.articles);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/dashboard/news');
+      const data = await res.json();
+      setNewsData(data.articles);
+    } catch (err) {
+      console.error('Error fetching news:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Card className="news-card p-3">
-      <Card.Body>
-        <Card.Title>Latest News</Card.Title>
-        <Button variant="primary" onClick={getNewsData}>Get News</Button>
-        {loading ? <p>Loading...</p> : (
+    <div className="card news-card p-3 shadow">
+      <div className="card-body">
+        <h5 className="card-title">Latest News</h5>
+        <button className="btn btn-primary mb-3" onClick={getNewsData}>
+          Get News
+        </button>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           <div>
             {newsData.map((article, index) => (
-              <div key={index}>
-                <h5>{article.title}</h5>
+              <div key={index} className="mb-3">
+                <h6>{article.title}</h6>
                 <p>{article.description}</p>
-                <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read more
+                </a>
               </div>
             ))}
           </div>
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
 

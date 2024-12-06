@@ -1,24 +1,35 @@
-const permissionMiddleware = (requiredPermissions = []) => async (req, res, next) => {
+const User = require("../models/User");const permissionMiddleware =
+  (requiredPermissions = []) =>
+  async (req, res, next) => {
     try {
-      const userPerms = req.user.permissions; // Fetch user's role and permissions
+      // console.log(req.user);
+
+      const userID = req.user.id; // Get user ID
       //console.log(userPerms);
-  
-      if (!userPerms) {
-        return res.status(403).json({ error: 'Forbidden: Role or permissions not found' });
+      if (!userID) {
+        return res.status(402).json({ error: "User id is not in the request" });
       }
-  
-      const hasPermission = requiredPermissions.some(permission =>
-        userPerms.includes(permission)
-      );
-  
-      if (!hasPermission) {
-        return res.status(403).json({ error: 'Forbidden: Access denied' });
+
+      // Fetch user with their roles and permissions
+      const user = await User.findById(userID).populate("role"); // Assuming roles are referenced
+      // console.log(user);
+
+      if (!user) {
+        return res.status(403).json({ error: "Forbidden: User not found" });
       }
-  
+      // Aggregate all permissions from user's roles
+      const userPerms = user.role.permissions;
+
+      // Check if all required permissions are included in user's permissions
+      const hasAllPermissions = requiredPermissions.every((permission) => userPerms.includes(permission));
+
+      if (!hasAllPermissions) {
+        return res.status(403).json({ error: "Forbidden: Access denied" });
+      }
       next(); // User has permission
     } catch (err) {
-      res.status(500).json({ error: 'Internal Server Error', details: err.message });
+      res.status(500).json({ error: "Internal Server Error", details: err.message });
     }
   };
-  
-module.exports = permissionMiddleware;  
+
+module.exports = permissionMiddleware;

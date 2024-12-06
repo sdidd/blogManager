@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import interact from 'interactjs';
 
-const NasaComponent = () => {
-  const [nasaData, setNasaData] = useState(null);
+const JokeComponent = () => {
+  const [joke, setJoke] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    interact('.nasa-card')
+    interact('.joke-card')
       .resizable({
         edges: { left: true, right: true, bottom: true, top: true }
       })
@@ -21,31 +20,30 @@ const NasaComponent = () => {
       });
   }, []);
 
-  const getNasaData = async () => {
+  const getJoke = async () => {
     setLoading(true);
-    const res = await fetch('/api/dashboard/nasa');
-    const data = await res.json();
-    setNasaData(data);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/dashboard/joke');
+      const data = await res.json();
+      setJoke(data.joke);
+    } catch (err) {
+      console.error('Error fetching joke:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Card className="nasa-card p-3">
-      <Card.Body>
-        <Card.Title>NASA Astronomy Picture of the Day</Card.Title>
-        <Button variant="primary" onClick={getNasaData}>Get NASA Picture</Button>
-        {loading ? <p>Loading...</p> : (
-          nasaData && (
-            <div>
-              <h5>{nasaData.title}</h5>
-              <img src={nasaData.url} alt={nasaData.title} style={{ width: '100%' }} />
-              <p>{nasaData.explanation}</p>
-            </div>
-          )
-        )}
-      </Card.Body>
-    </Card>
+    <div className="card joke-card p-3 shadow">
+      <div className="card-body">
+        <h5 className="card-title">Random Joke</h5>
+        <button className="btn btn-primary mb-3" onClick={getJoke}>
+          Get Joke
+        </button>
+        {loading ? <p>Loading...</p> : <p>{joke}</p>}
+      </div>
+    </div>
   );
 };
 
-export default NasaComponent;
+export default JokeComponent;

@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import roles from "../utils/roles";
+import React, { useEffect, useState } from "react";import { Outlet, Link, useNavigate } from "react-router-dom";
 import API from "../api";
+import roles from "../utils/roles";
 import Logout from "./Logout";
+
+import JokeComponent from "./dashboard/JokeComponent";
+import NasaComponent from "./dashboard/NasaComponent";
+import NewsComponent from "./dashboard/NewsComponent";
+import WeatherComponent from "./dashboard/WeatherComponent";
+import HolidaysComponent from "./dashboard/HolidaysComponent";
+import GeoLocationComponent from "./dashboard/GeoLocationComponent";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
   const [user, setUser] = useState(null);
+  const [showDefaultContent, setShowDefaultContent] = useState(true); // Toggle default widgets
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,12 +21,12 @@ const Dashboard = () => {
       try {
         const response = await API.get("/user/profile");
         setUserRole(response.data.role.name);
-        setUser(response.data); // Store the user details
+        setUser(response.data);
       } catch (err) {
         if (err.response?.status === 401) {
-          navigate("/login"); // Redirect to login on unauthorized
+          navigate("/login"); // Redirect to login
         } else {
-          console.error("Error fetching user role", err);
+          console.error("Error fetching user profile:", err);
         }
       }
     };
@@ -33,16 +40,14 @@ const Dashboard = () => {
       <nav className="navbar navbar-dark bg-dark rounded p-2">
         <span className="navbar-brand">Dashboard</span>
         <div className="ml-auto d-flex align-items-center">
-          <Link className="btn btn-success mr-2" to="results">
+          <Link className="btn btn-success mr-2" to="results" onClick={() => setShowDefaultContent(false)}>
             Results
           </Link>
           {userRole === roles.admin && (
-            <Link className="btn btn-danger mr-2" to="admindashboard">
+            <Link className="btn btn-danger mr-2" to="admindashboard" onClick={() => setShowDefaultContent(false)}>
               Admin Panel
             </Link>
           )}
-
-          {/* Profile Dropdown */}
           <div className="dropdown">
             <button
               className="btn btn-primary dropdown-toggle"
@@ -74,7 +79,7 @@ const Dashboard = () => {
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <Link className="dropdown-item" to="profile">
+                <Link className="dropdown-item" to="profile" onClick={() => setShowDefaultContent(false)}>
                   More Settings
                 </Link>
               </li>
@@ -82,8 +87,32 @@ const Dashboard = () => {
           </div>
         </div>
       </nav>
-      {/* Render child components */}
-      <Outlet />
+
+      {/* Main Content */}
+      {showDefaultContent ? (
+        <div className="row mt-4">
+          {/* <div className="col-md-6 mb-3">
+            <JokeComponent />
+          </div>
+          <div className="col-md-6 mb-3">
+            <NasaComponent />
+          </div>
+          <div className="col-md-6 mb-3">
+            <NewsComponent />
+          </div>
+          <div className="col-md-6 mb-3">
+            <WeatherComponent />
+          </div> */}
+          <div className="col-md-6 mb-3">
+            <HolidaysComponent />
+          </div>
+          {/* <div className="col-md-6 mb-3">
+            <GeoLocationComponent />
+          </div> */}
+        </div>
+      ) : (
+        <Outlet />
+      )}
     </div>
   );
 };

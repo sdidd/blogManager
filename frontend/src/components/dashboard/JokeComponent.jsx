@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import interact from 'interactjs';
 
 const JokeComponent = () => {
@@ -23,22 +22,27 @@ const JokeComponent = () => {
 
   const getJoke = async () => {
     setLoading(true);
-    const res = await fetch('/api/dashboard/joke');
-    const data = await res.json();
-    setJoke(data.joke);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/dashboard/joke');
+      const data = await res.json();
+      setJoke(data.joke);
+    } catch (err) {
+      console.error('Error fetching joke:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Card className="joke-card p-3">
-      <Card.Body>
-        <Card.Title>Random Joke</Card.Title>
-        <Button variant="primary" onClick={getJoke}>Get Joke</Button>
-        {loading ? <p>Loading...</p> : (
-          <p>{joke}</p>
-        )}
-      </Card.Body>
-    </Card>
+    <div className="card joke-card p-3 shadow">
+      <div className="card-body">
+        <h5 className="card-title">Random Joke</h5>
+        <button className="btn btn-primary mb-3" onClick={getJoke}>
+          Get Joke
+        </button>
+        {loading ? <p>Loading...</p> : <p>{joke}</p>}
+      </div>
+    </div>
   );
 };
 

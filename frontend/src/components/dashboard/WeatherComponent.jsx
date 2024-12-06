@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import interact from 'interactjs';
 
 const WeatherComponent = () => {
@@ -23,28 +22,43 @@ const WeatherComponent = () => {
 
   const getWeatherData = async () => {
     setLoading(true);
-    const res = await fetch('/api/dashboard/weather');
-    const data = await res.json();
-    setWeatherData(data);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/dashboard/weather');
+      const data = await res.json();
+      setWeatherData(data.weather);
+    } catch (err) {
+      console.error('Error fetching weather data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Card className="weather-card p-3">
-      <Card.Body>
-        <Card.Title>Weather Information</Card.Title>
-        <Button variant="primary" onClick={getWeatherData}>Get Weather</Button>
-        {loading ? <p>Loading...</p> : (
+    <div className="card weather-card p-3 shadow">
+      <div className="card-body">
+        <h5 className="card-title">Weather Information</h5>
+        <button className="btn btn-primary mb-3" onClick={getWeatherData}>
+          Get Weather
+        </button>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           weatherData && (
             <div>
-              <p><strong>Location:</strong> {weatherData.name}</p>
-              <p><strong>Temperature:</strong> {weatherData.main.temp}°C</p>
-              <p><strong>Condition:</strong> {weatherData.weather[0].description}</p>
+              <p>
+                <strong>Location:</strong> {weatherData.name}
+              </p>
+              <p>
+                <strong>Temperature:</strong> {weatherData.main.temp}°C
+              </p>
+              <p>
+                <strong>Condition:</strong> {weatherData.weather[0].description}
+              </p>
             </div>
           )
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
 

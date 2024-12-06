@@ -123,13 +123,13 @@ router.post("/logout", authMiddleware, async (req, res) => {
   const token = req.token;
 
   try {
-    const RedisClient = getRedisClient();
+    // const RedisClient = getRedisClient();
 
-    // Remove session from Redis
-    await RedisClient.hDel(`session:${token}`);
+    // // Remove session from Redis
+    // await RedisClient.hDel(`session:${token}`);
 
-    // Blacklist the token to revoke it (add it to the blacklist in Redis)
-    await RedisClient.set(`blacklist:${token}`, "true", { EX: parseInt(process.env.JWT_EXPIRATION || "3600", 10) });
+    // // Blacklist the token to revoke it (add it to the blacklist in Redis)
+    // await RedisClient.set(`blacklist:${token}`, "true", { EX: parseInt(process.env.JWT_EXPIRATION || "3600", 10) });
 
     // Clear refresh token cookie
     res.clearCookie("refreshToken");
@@ -150,9 +150,26 @@ router.post("/logout", authMiddleware, async (req, res) => {
 });
 
 // Token Validation Route (for protected routes)
-router.get("/verifyToken", authMiddleware, (req, res) => {
+router.get("/verifyToken", authMiddleware, async (req, res) => {
   res.status(200).json({ message: "Token is valid", user: req.user });
 });
+
+// Get User Permissions Route
+router.get("/getPermissions", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate("role");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Extract permissions from the user's role
+    const permissions = user.role?.permissions || [];
+    res.status(200).json({ permissions });
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
+  }
+});
+
 
 // Refresh Token Route
 router.post("/refresh-token", async (req, res) => {

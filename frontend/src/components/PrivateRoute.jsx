@@ -1,45 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import API from "../api";
 
-const PrivateRoute = ({ allowedRoles = [], requiredPermissions = [] }) => {
-  const [user, setUser] = useState(null); // Store user details
+const PrivateRoute = ({ requiredPermissions = [] }) => {
+  const [permissions, setPermissions] = useState([]); // Store user permissions
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchPermissions = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return setLoading(false);
 
-        const response = await API.get("/auth/verifyToken");
-        setUser({
-          role: response.data.user.role,
-          permissions: response.data.user.permissions || [],
-        });
+        const response = await API.get("/auth/getPermissions");
+        setPermissions(response.data.permissions || []);
       } catch (error) {
-        console.error("Error fetching user details:", error);
+        console.error("Error fetching permissions:", error);
         localStorage.removeItem("token");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserDetails();
-  }, [navigate]);
+    fetchPermissions();
+  }, []);
 
   if (loading) return <div>Loading...</div>;
 
-  if (!user) return <Navigate to="/login" />;
-
-  // Role check
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" />;
-  }
+  if (!permissions.length) return <Navigate to="/login" />;
 
   // Permission check
-  if (requiredPermissions.length > 0 && !requiredPermissions.every((perm) => user.permissions.includes(perm))) {
+  if (
+    requiredPermissions.length > 0 &&
+    !requiredPermissions.every((perm) => permissions.includes(perm))
+  ) {
     return <Navigate to="/" />;
   }
 
