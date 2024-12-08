@@ -10,7 +10,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const homeRoutes = require('./routes/home');
-const settingsRoute = require('./routes/settings');
+const sessionRoute = require('./routes/session');
 const dashboardApiRoute = require('./routes/api/dashboard')
 
 const app = express();
@@ -25,7 +25,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/home', homeRoutes);
-app.use('/settings/admin', settingsRoute);
+app.use('/admin/session', sessionRoute);
 app.use('/api/dashboard', dashboardApiRoute);
 
 // Fallback route to redirect to login if unauthorized

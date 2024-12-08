@@ -1,0 +1,81 @@
+/* Green for login */
+.badge-custom-login {
+  background-color: #28a745; /* Green */
+}
+
+/* Red shades for logout, delete, destruction */
+.badge-custom-logout,
+.badge-custom-delete,
+.badge-custom-destruction {
+  background-color: #dc3545; /* Red */
+}
+
+/* Yellow for token revoked */
+.badge-custom-token-revoked {
+  background-color: #ffc107; /* Yellow */
+}
+
+/* Blue for action performed */
+.badge-custom-action-performed {
+  background-color: #007bff; /* Blue */
+}
+
+/* Gray for general actions like session terminated */
+.badge-custom-session-terminated {
+  background-color: #6c757d; /* Gray */
+}
+
+/* Teal for create */
+.badge-custom-create {
+  background-color: #17a2b8; /* Teal */
+}
+
+/* Purple for update */
+.badge-custom-update {
+  background-color: #6610f2; /* Purple */
+}
+
+/* Orange for delete */
+.badge-custom-delete {
+  background-color: #fd7e14; /* Orange */
+}
+
+/* Mint for read */
+.badge-custom-read {
+  background-color: #20c997; /* Mint */
+}
+
+/* Pink for permission changed */
+.badge-custom-permission-changed {
+  background-color: #e83e8c; /* Pink */
+}
+
+/* Gold for role updated */
+.badge-custom-role-updated {
+  background-color: #f1c40f; /* Gold */
+}
+
+/* Violet for get permissions */
+.badge-custom-get-permissions {
+  background-color: #6f42c1; /* Violet */
+}
+
+/* Tomato for get */
+.badge-custom-get {
+  background-color: #e74a3b; /* Tomato */
+}
+
+/* Fuchsia for error */
+.badge-custom-error {
+  background-color: #d63384; /* Fuchsia */
+}
+
+/* Mustard for post */
+.badge-custom-post {
+  background-color: #d39e00; /* Mustard */
+}
+
+/* Sky blue for put */
+.badge-custom-put {
+  background-color: #007bff; /* Sky Blue */
+}

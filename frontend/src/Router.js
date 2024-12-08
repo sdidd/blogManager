@@ -1,4 +1,5 @@
-import React from "react";import { createBrowserRouter } from "react-router-dom";
+import React from "react";
+import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Error from "./components/Error";
 import Login from "./components/Login";
@@ -12,7 +13,8 @@ import RoleManagement from "./components/admin/RoleManagement";
 import roles from "./utils/roles";
 import Home from "./components/Home";
 import UserManagement from "./components/admin/UserManagement";
-import Settings from "./components/admin/Settings";
+import SessionManagement from "./components/admin/SessionManagement";
+import LogsManagement from "./components/admin/LogsManagement";
 
 const Router = createBrowserRouter([
   {
@@ -41,7 +43,7 @@ const Router = createBrowserRouter([
               },
               {
                 path: "admindashboard",
-                element: <PrivateRoute requiredPermissions = {["view:admindashboard"]} />, // Protected admin dashboard
+                element: <PrivateRoute requiredPermissions={["view:admindashboard"]} />, // Protected admin dashboard
                 children: [
                   {
                     path: "",
@@ -49,7 +51,8 @@ const Router = createBrowserRouter([
                     children: [
                       { path: "role-management", element: <RoleManagement /> },
                       { path: "user-management", element: <UserManagement /> },
-                      { path: "settings", element: <Settings /> },
+                      { path: "log-management", element: <LogsManagement /> },
+                      { path: "session-management", element: <SessionManagement /> },
                     ],
                     errorElement: <Error />,
                   },

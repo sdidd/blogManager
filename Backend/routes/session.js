@@ -3,6 +3,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const permissionMiddleware = require("../middleware/permissionMiddleware");
 const getRedisClient = require("../utils/redis/redisConfig");
 const sessionMiddleware = require('../middleware/sessionMiddleware');
+const {getActiveSessions, getBlacklistedTokens} = require("../utils/redis/redisUtils")
 
 const mongoose = require("mongoose");
 
@@ -16,6 +17,8 @@ router.use((req, res, next) => {
     "/active-sessions": ["manage:sessions"],
     "/active-sessions/:userId": ["manage:sessions"],
     "/terminate-session": ["manage:sessions"],
+    "/blacklisted-tokens": ["manage:sessions"],
+    "/restore-token": ["manage:sessions"], 
   };
 
   const permissions = routePermissions[req.path];
@@ -25,34 +28,29 @@ router.use((req, res, next) => {
   next();
 });
 
-// Helper: Get active sessions from Redis (Updated for hash data structure)
-const getActiveSessions = async (redisClient) => {
-  try {
-    const keys = await redisClient.keys("session:*");
-    const sessions = [];
-    for (const key of keys) {
-      const sessionData = await redisClient.hGetAll(key); // Fetch session data from hash
-      if (Object.keys(sessionData).length > 0) {
-        sessions.push({ token: key.replace("session:", ""), ...sessionData });
-      }
-    }
-    return sessions;
-  } catch (err) {
-    console.error("[ERROR] Failed to fetch sessions from Redis:", err);
-    throw err;
-  }
-};
 
-// Fetch all active sessions for all users
+// Fetch all active sessions
 router.get("/active-sessions", async (req, res) => {
   try {
-    const redisClient = await getRedisClient();
-    const sessions = await getActiveSessions(redisClient);
+    const redisClient = getRedisClient();
 
-    res.status(200).json({ sessions });
+    // Fetch active and blacklisted sessions
+    const sessions = await getActiveSessions(redisClient);
+    const blacklistedTokens = await getBlacklistedTokens(redisClient);
+
+    // Separate blacklisted sessions
+    const blacklistedSessions = sessions.filter((session) => 
+      blacklistedTokens.includes(session.token)
+    );
+
+    const activeSessions = sessions.filter((session) => 
+      !blacklistedTokens.includes(session.token)
+    );
+
+    res.status(200).json({ activeSessions, blacklistedSessions });
   } catch (err) {
     console.error("[ERROR] Failed to fetch active sessions:", err);
-    res.status(501).json({ error: "Failed to fetch active sessions", details: err.message });
+    res.status(500).json({ error: "Failed to fetch sessions", details: err.message });
   }
 });
 
@@ -126,5 +124,45 @@ router.post("/revoke-token", async (req, res) => {
     res.status(500).json({ error: "Failed to revoke token", details: err.message });
   }
 });
+
+// Fetch all blacklisted tokens
+router.get("/blacklisted-tokens", async (req, res) => {
+  try {
+    const redisClient = getRedisClient();
+    const blacklistedTokens = await getBlacklistedTokens(redisClient);
+
+    res.status(200).json({ blacklistedTokens });
+  } catch (err) {
+    console.error("[ERROR] Failed to fetch blacklisted tokens:", err);
+    res.status(500).json({ error: "Failed to fetch blacklisted tokens", details: err.message });
+  }
+});
+
+// Restore a blacklisted token
+router.post("/restore-token", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+
+  try {
+    const redisClient = getRedisClient();
+
+    // Remove the token from the blacklist
+    const blacklistKey = `blacklist:${token}`;
+    const removed = await redisClient.del(blacklistKey);
+
+    if (removed === 0) {
+      return res.status(404).json({ error: "Token not found in blacklist" });
+    }
+
+    res.status(200).json({ message: "Token restored successfully" });
+  } catch (err) {
+    console.error("[ERROR] Failed to restore token:", err);
+    res.status(500).json({ error: "Failed to restore token", details: err.message });
+  }
+});
+
 
 module.exports = router;
