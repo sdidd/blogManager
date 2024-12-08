@@ -1,4 +1,4 @@
-const getRedisClient = require("../utils/redis/redisConfig");
+const {getRedisClient} = require("../utils/redis/redisConfig");
 
 const isTokenBlacklisted = async (token) => {
   const redisClient = getRedisClient();

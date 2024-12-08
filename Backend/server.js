@@ -11,7 +11,8 @@ const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const homeRoutes = require('./routes/home');
 const sessionRoute = require('./routes/session');
-const dashboardApiRoute = require('./routes/api/dashboard')
+const dashboardApiRoute = require('./routes/api/dashboard');
+const redisRouter = require('./routes/api/redis')
 
 const app = express();
 
@@ -27,6 +28,8 @@ app.use('/admin', adminRoutes);
 app.use('/home', homeRoutes);
 app.use('/admin/session', sessionRoute);
 app.use('/api/dashboard', dashboardApiRoute);
+app.use("/api/redis", redisRouter);  // Mount the redisRouter at /api/redis
+
 
 // Fallback route to redirect to login if unauthorized
 app.use((req, res, next) => {

@@ -1,7 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middleware/authMiddleware");
 const permissionMiddleware = require("../middleware/permissionMiddleware");
-const getRedisClient = require("../utils/redis/redisConfig");
+const {getRedisClient} = require("../utils/redis/redisConfig");
 const sessionMiddleware = require('../middleware/sessionMiddleware');
 const {getActiveSessions, getBlacklistedTokens} = require("../utils/redis/redisUtils")
 

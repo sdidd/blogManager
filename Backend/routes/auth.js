@@ -6,7 +6,7 @@ const emailUser = require("../utils/emailUtils");
 const router = express.Router();
 const { generateToken, generateRefreshToken } = require("../utils/jwtUtils");
 const authMiddleware = require("../middleware/authMiddleware");
-const getRedisClient = require("../utils/redis/redisConfig");
+const {getRedisClient} = require("../utils/redis/redisConfig");
 const logAuditTrail = require("../utils/logUtils");
 const Logs = require('../models/AuditTrail')
 require("dotenv").config();

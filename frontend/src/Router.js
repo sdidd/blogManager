@@ -1,5 +1,4 @@
-import React from "react";
-import { createBrowserRouter } from "react-router-dom";
+import React from "react";import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Error from "./components/Error";
 import Login from "./components/Login";
@@ -15,6 +14,7 @@ import Home from "./components/Home";
 import UserManagement from "./components/admin/UserManagement";
 import SessionManagement from "./components/admin/SessionManagement";
 import LogsManagement from "./components/admin/LogsManagement";
+import Redis from "./components/development/Redis";
 
 const Router = createBrowserRouter([
   {
@@ -63,6 +63,11 @@ const Router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/redis",
+    element: <Redis />,
+    errorElement: <Error />,
   },
 ]);
 
