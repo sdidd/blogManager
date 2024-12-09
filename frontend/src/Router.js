@@ -15,6 +15,7 @@ import UserManagement from "./components/admin/UserManagement";
 import SessionManagement from "./components/admin/SessionManagement";
 import LogsManagement from "./components/admin/LogsManagement";
 import Redis from "./components/development/Redis";
+import ImageUploader from "./components/dashboard/ImageUploader";
 
 const Router = createBrowserRouter([
   {
@@ -38,8 +39,8 @@ const Router = createBrowserRouter([
                 element: <Profile />,
               },
               {
-                path: "results", // Nested inside Dashboard
-                element: <Results />,
+                path: "images", // Nested inside Dashboard
+                element: <ImageUploader />,
               },
               {
                 path: "admindashboard",
