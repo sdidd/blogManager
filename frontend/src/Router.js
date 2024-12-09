@@ -12,7 +12,10 @@ import RoleManagement from "./components/admin/RoleManagement";
 import roles from "./utils/roles";
 import Home from "./components/Home";
 import UserManagement from "./components/admin/UserManagement";
-import Settings from "./components/admin/Settings";
+import SessionManagement from "./components/admin/SessionManagement";
+import LogsManagement from "./components/admin/LogsManagement";
+import Redis from "./components/development/Redis";
+import ImageUploader from "./components/dashboard/ImageUploader";
 
 const Router = createBrowserRouter([
   {
@@ -36,12 +39,12 @@ const Router = createBrowserRouter([
                 element: <Profile />,
               },
               {
-                path: "results", // Nested inside Dashboard
-                element: <Results />,
+                path: "images", // Nested inside Dashboard
+                element: <ImageUploader />,
               },
               {
                 path: "admindashboard",
-                element: <PrivateRoute requiredPermissions = {["view:admindashboard"]} />, // Protected admin dashboard
+                element: <PrivateRoute requiredPermissions={["view:admindashboard"]} />, // Protected admin dashboard
                 children: [
                   {
                     path: "",
@@ -49,7 +52,8 @@ const Router = createBrowserRouter([
                     children: [
                       { path: "role-management", element: <RoleManagement /> },
                       { path: "user-management", element: <UserManagement /> },
-                      { path: "settings", element: <Settings /> },
+                      { path: "log-management", element: <LogsManagement /> },
+                      { path: "session-management", element: <SessionManagement /> },
                     ],
                     errorElement: <Error />,
                   },
@@ -60,6 +64,11 @@ const Router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/redis",
+    element: <Redis />,
+    errorElement: <Error />,
   },
 ]);
 

@@ -10,23 +10,30 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const homeRoutes = require('./routes/home');
-const settingsRoute = require('./routes/settings');
-const dashboardApiRoute = require('./routes/api/dashboard')
+const sessionRoute = require('./routes/session');
+const dashboardApiRoute = require('./routes/api/dashboard');
+const redisRouter = require('./routes/api/redis');
+const imageRouter = require('./routes/api/image')
 
 const app = express();
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000',"*"], credentials: true }));
 
 // Routes
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/home', homeRoutes);
-app.use('/settings/admin', settingsRoute);
+app.use('/admin/session', sessionRoute);
 app.use('/api/dashboard', dashboardApiRoute);
+app.use("/api/redis", redisRouter);  // Mount the redisRouter at /api/redis
+app.use('/api/image', imageRouter);
+
+app.use("/uploads", express.static("uploads"));
+
 
 // Fallback route to redirect to login if unauthorized
 app.use((req, res, next) => {
@@ -54,4 +61,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(4000, () => console.log('Server running on http://localhost:4000'));
+app.listen(process.env.PORT, () => console.log('Server running on http://localhost:4000'));

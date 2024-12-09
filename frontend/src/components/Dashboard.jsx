@@ -3,12 +3,7 @@ import API from "../api";
 import roles from "../utils/roles";
 import Logout from "./Logout";
 
-import JokeComponent from "./dashboard/JokeComponent";
-import NasaComponent from "./dashboard/NasaComponent";
-import NewsComponent from "./dashboard/NewsComponent";
-import WeatherComponent from "./dashboard/WeatherComponent";
 import HolidaysComponent from "./dashboard/HolidaysComponent";
-import GeoLocationComponent from "./dashboard/GeoLocationComponent";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
@@ -16,10 +11,13 @@ const Dashboard = () => {
   const [showDefaultContent, setShowDefaultContent] = useState(true); // Toggle default widgets
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await API.get("/user/profile");
+        // console.log(response.data);
+
         setUserRole(response.data.role.name);
         setUser(response.data);
       } catch (err) {
@@ -40,8 +38,8 @@ const Dashboard = () => {
       <nav className="navbar navbar-dark bg-dark rounded p-2">
         <span className="navbar-brand">Dashboard</span>
         <div className="ml-auto d-flex align-items-center">
-          <Link className="btn btn-success mr-2" to="results" onClick={() => setShowDefaultContent(false)}>
-            Results
+          <Link className="btn btn-success mr-2" to="images" onClick={() => setShowDefaultContent(false)}>
+            Images
           </Link>
           {userRole === roles.admin && (
             <Link className="btn btn-danger mr-2" to="admindashboard" onClick={() => setShowDefaultContent(false)}>
@@ -91,18 +89,6 @@ const Dashboard = () => {
       {/* Main Content */}
       {showDefaultContent ? (
         <div className="row mt-4">
-          {/* <div className="col-md-6 mb-3">
-            <JokeComponent />
-          </div>
-          <div className="col-md-6 mb-3">
-            <NasaComponent />
-          </div>
-          <div className="col-md-6 mb-3">
-            <NewsComponent />
-          </div>
-          <div className="col-md-6 mb-3">
-            <WeatherComponent />
-          </div> */}
           <div className="col-md-6 mb-3">
             <HolidaysComponent />
           </div>

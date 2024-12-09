@@ -1,4 +1,5 @@
-import React from "react"; import { Link, NavLink, Outlet } from "react-router-dom";
+import React from "react";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
@@ -18,8 +19,13 @@ const AdminDashboard = () => {
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="settings" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
-            Settings
+          <NavLink to="log-management" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Logs Management
+          </NavLink>
+        </li>
+        <li className="nav-item">
+          <NavLink to="session-management" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Session Management
           </NavLink>
         </li>
         {/* Add more links as needed */}
