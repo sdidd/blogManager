@@ -38,8 +38,8 @@ const Dashboard = () => {
       <nav className="navbar navbar-dark bg-dark rounded p-2">
         <span className="navbar-brand">Dashboard</span>
         <div className="ml-auto d-flex align-items-center">
-          <Link className="btn btn-success mr-2" to="results" onClick={() => setShowDefaultContent(false)}>
-            Results
+          <Link className="btn btn-success mr-2" to="images" onClick={() => setShowDefaultContent(false)}>
+            Images
           </Link>
           {userRole === roles.admin && (
             <Link className="btn btn-danger mr-2" to="admindashboard" onClick={() => setShowDefaultContent(false)}>
