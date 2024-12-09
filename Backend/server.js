@@ -20,7 +20,22 @@ const app = express();
 // Middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:3000',"*"], credentials: true }));
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedPattern = /^https:\/\/frontend-[a-z0-9]+\.onrender\.com$/;
+    if (origin === 'http://localhost:3000' || // Allow local development
+      origin && allowedPattern.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+app.options('*', cors());
 
 // Routes
 app.use('/auth', authRoutes);
