@@ -1,0 +1,45 @@
+[{
+  "_id": {
+    "$oid": "64a3fcd56e913f1a5ef9e001"
+  },
+  "name": "student",
+  "permissions": [
+    "view:profile",
+    "update:profile",
+    "view:results"
+  ]
+},
+{
+  "_id": {
+    "$oid": "64a3fcd56e913f1a5ef9e002"
+  },
+  "name": "professor",
+  "permissions": [
+    "view:profile",
+    "update:profile",
+    "manage:students",
+    "approve:requests"
+  ]
+},
+{
+  "_id": {
+    "$oid": "64a3fcd56e913f1a5ef9e003"
+  },
+  "name": "admin",
+  "permissions": [
+    "view:profile",
+    "update:profile",
+    "view:results",
+    "manage:users",
+    "enroll:courses",
+    "get:roles",
+    "manage:permissions",
+    "set:roles",
+    "manage:roles",
+    "manage:sessions",
+    "view:dashboard",
+    "view:admindashboard",
+    "manage:logs"
+  ],
+  "__v": 8
+}]
