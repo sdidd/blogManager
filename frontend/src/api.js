@@ -1,7 +1,8 @@
 import axios from 'axios';
+require('dotenv').config();
 
 const API = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: process.env.BACKEND_BASE_URL || 'http://localhost:4000',
   withCredentials: true, // Enables sending cookies
 });
 
