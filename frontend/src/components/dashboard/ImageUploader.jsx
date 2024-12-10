@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";import API from "../../api";
 import ReactImageZoom from "react-image-zooom";
 
-const BASE_URL = "http://localhost:4000"; // your backend URL
+const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL; // your backend URL
 
 const ImageUploader = () => {
   const [imageFile, setImageFile] = useState(null);
