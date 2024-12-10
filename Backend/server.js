@@ -75,5 +75,9 @@ app.use((err, req, res, next) => {
   next();
 });
 
+app.get("/health", async (req,res) => {
+  return res.status(200).json({Status: "Backend is alive and kicking!!"});
+})
+
 // Start Server
 app.listen(process.env.PORT, () => console.log('Server running on http://localhost:4000'));
