@@ -22,20 +22,22 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedPattern = /^https:\/\/frontend-[a-z0-9]+\.onrender\.com$/;
-    if (origin === 'http://localhost:3000' || // Allow local development
-      origin && allowedPattern.test(origin)) {
-      callback(null, true);
+    const allowedPattern = /\.onrender\.com$/; // Match any subdomain of onrender.com
+    if (!origin || // Allow direct access without an origin (e.g., browser requests)
+        origin === 'http://localhost:3000' || // Allow local development
+        allowedPattern.test(origin)) { // Allow matching onrender domains
+      callback(null, true); // Allow the request
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS')); // Block the request
     }
   },
-  credentials: true,
+  credentials: true, // Allow cookies or other credentials
 };
 
 app.use(cors(corsOptions));
 
-app.options('*', cors());
+// Enable preflight requests (e.g., for OPTIONS method)
+app.options('*', cors(corsOptions));
 
 // Routes
 app.use('/auth', authRoutes);
@@ -54,8 +56,8 @@ app.use("/uploads", express.static("uploads"));
 app.use((req, res, next) => {
   const token = req.cookies?.token;
 
-  // Skip redirection for auth-related routes
-  if (req.path.startsWith('/auth')) {
+  // Skip redirection for API and auth routes
+  if (req.path.startsWith('/auth') || req.path.startsWith('/api') || req.path.startsWith('/health')) {
     return next();
   }
 
@@ -66,6 +68,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.error('Error occurred:', err); // Log the error
   if (err instanceof multer.MulterError) {
     return res.status(400).json({ error: err.message });
   }
@@ -74,6 +77,15 @@ app.use((err, req, res, next) => {
   }
   next();
 });
+
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.path}`);
+  next();
+});
+
+app.get("/health", async (req,res) => {
+  return res.status(200).json({Status: "Backend is alive and Kicking"});
+})
 
 // Start Server
 app.listen(process.env.PORT, () => console.log('Server running on http://localhost:4000'));
