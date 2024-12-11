@@ -28,6 +28,11 @@ const AdminDashboard = () => {
             Session Management
           </NavLink>
         </li>
+        <li className="nav-item">
+          <NavLink to="metrics-management" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Metrics Management
+          </NavLink>
+        </li>
         {/* Add more links as needed */}
       </ul>
 

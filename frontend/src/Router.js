@@ -1,4 +1,5 @@
-import React from "react";import { createBrowserRouter } from "react-router-dom";
+import React from "react";
+import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Error from "./components/Error";
 import Login from "./components/Login";
@@ -16,6 +17,7 @@ import SessionManagement from "./components/admin/SessionManagement";
 import LogsManagement from "./components/admin/LogsManagement";
 import Redis from "./components/development/Redis";
 import ImageUploader from "./components/dashboard/ImageUploader";
+import MetricManagement from "./components/admin/MetricManagement";
 
 const Router = createBrowserRouter([
   {
@@ -54,6 +56,7 @@ const Router = createBrowserRouter([
                       { path: "user-management", element: <UserManagement /> },
                       { path: "log-management", element: <LogsManagement /> },
                       { path: "session-management", element: <SessionManagement /> },
+                      { path: "metrics-management", element: <MetricManagement /> },
                     ],
                     errorElement: <Error />,
                   },

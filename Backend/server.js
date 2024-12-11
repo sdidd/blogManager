@@ -13,7 +13,8 @@ const homeRoutes = require('./routes/home');
 const sessionRoute = require('./routes/session');
 const dashboardApiRoute = require('./routes/api/dashboard');
 const redisRouter = require('./routes/api/redis');
-const imageRouter = require('./routes/api/image')
+const imageRouter = require('./routes/api/image');
+const metricRouter = require('./routes/api/metrics')
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use('/admin/session', sessionRoute);
 app.use('/api/dashboard', dashboardApiRoute);
 app.use("/api/redis", redisRouter);  // Mount the redisRouter at /api/redis
 app.use('/api/image', imageRouter);
+app.use('/api/metrics', metricRouter);
 
 app.use("/uploads", express.static("uploads"));
 
@@ -88,4 +90,4 @@ app.get("/health", async (req,res) => {
 })
 
 // Start Server
-app.listen(process.env.PORT, () => console.log('Server running on http://localhost:4000'));
+app.listen(process.env.PORT, () => console.log(`Server running on http://localhost:${process.env.PORT}`));
