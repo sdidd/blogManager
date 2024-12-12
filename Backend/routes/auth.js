@@ -1,14 +1,13 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
+const express = require("express");const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const emailUser = require("../utils/emailUtils");
 const router = express.Router();
 const { generateToken, generateRefreshToken } = require("../utils/jwtUtils");
 const authMiddleware = require("../middleware/authMiddleware");
-const {getRedisClient} = require("../utils/redis/redisConfig");
+const { getRedisClient } = require("../utils/redis/redisConfig");
 const logAuditTrail = require("../utils/logUtils");
-const Logs = require('../models/AuditTrail')
+const Logs = require("../models/AuditTrail");
 require("dotenv").config();
 
 // Login Route
@@ -62,7 +61,7 @@ router.post("/login", async (req, res) => {
     const logData = {
       userId: user._id,
       action: "LOGIN",
-      ip: req.ip,  // Manually pass the IP address
+      ip: req.ip, // Manually pass the IP address
       type: "LOGIN",
       token: token,
       details: `User logged in with username ${user.username}`,
@@ -100,11 +99,7 @@ router.post("/register", async (req, res) => {
     await user.save();
 
     // Generate verification token
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${token}`;
 
@@ -118,7 +113,7 @@ router.post("/register", async (req, res) => {
     const logData = {
       userId: user._id,
       action: "REGISTER",
-      ip: req.ip,  // Manually pass the IP address
+      ip: req.ip, // Manually pass the IP address
       details: `User registered with email ${user.email}`,
     };
     await Logs.create(logData);
@@ -192,38 +187,69 @@ router.get("/getPermissions", authMiddleware, async (req, res) => {
 });
 
 // Refresh Token Route
-router.post("/refresh-token", async (req, res) => {
+
+router.post("/refresh-token",authMiddleware, async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
+  if (!refreshToken) {
+    return res.status(401).json({ error: "No refresh token provided" });
+  }
 
   try {
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
-    // Check if tokenVersion is still valid
+    // Verify the refresh token
+    let payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    //req.user.id = payload.id;
+    // Find the user and validate the tokenVersion
     const user = await User.findById(payload.id).populate("role");
     if (!user || user.tokenVersion !== payload.tokenVersion) {
-      return res.status(401).json({ error: "Invalid refresh token" });
+      return res.status(401).json({ error: "Invalid or expired refresh token" });
     }
 
-    // Generate new tokens
+    // Generate a new access token and refresh token
     const token = generateToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
-    // Send new refresh token as HTTP-only cookie
+    // Replace old session with new session in Redis
+    const RedisClient = getRedisClient();
+
+    // Remove old session (associated with the old token)
+    await RedisClient.del(`session:${refreshToken}`);
+
+    // Create new session data
+    const sessionData = {
+      userId: user._id,
+      timestamp: Date.now(),
+    };
+
+    const sessionDataStr = JSON.stringify(sessionData);
+
+    // Store the new session in Redis
+    await RedisClient.hSet(`session:${token}`, "data", sessionDataStr);
+    await RedisClient.expire(
+      `session:${token}`,
+      parseInt(process.env.JWT_EXPIRATION || "3600", 10)
+    );
+
+    // Send the new refresh token as a secure HTTP-only cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
       sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
-    req.user.id = payload.id;
-    // Log refresh token action
+
+    // Log token refresh action
+    // console.log(req);
+    req.token = token;
     await logAuditTrail(req, "REFRESH_TOKEN", `User refreshed tokens`);
 
+    // Send the new access token in response
     res.status(200).json({ token });
   } catch (err) {
+    console.error("[ERROR] Refresh token failed:", err.message);
     res.status(401).json({ error: "Invalid or expired refresh token", details: err.message });
   }
 });
+
 
 module.exports = router;

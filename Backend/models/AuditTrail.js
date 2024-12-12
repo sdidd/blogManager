@@ -27,7 +27,9 @@ const auditTrailSchema = new mongoose.Schema(
         "POST",
         "DELETE",
         "PUT",
-        "UPDATE"
+        "UPDATE",
+        "REFRESH_TOKEN",
+        "VERIFY_TOKEN"
       ],
       required: true,
       description: "Describes the type of action being logged.",
@@ -40,17 +42,18 @@ const auditTrailSchema = new mongoose.Schema(
     ip: {
       type: String,
       default: "Unknown",
-      validate: {
-        validator: function (v) {
-          return (
-            /^(?:\d{1,3}\.){3}\d{1,3}$/.test(v) || // IPv4
-            /^([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}$/.test(v) || // Full IPv6
-            /^::1$/.test(v) || // IPv6 shorthand localhost
-            v === "Unknown" // Allow default value
-          );
-        },
-        message: (props) => `${props.value} is not a valid IP address!`,
-      },
+      required: true,
+      // validate: {
+      //   validator: function (v) {
+      //     return (
+      //       /^(?:\d{1,3}\.){3}\d{1,3}$/.test(v) || // IPv4
+      //       /^([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}$/.test(v) || // Full IPv6
+      //       /^::1$/.test(v) || // IPv6 shorthand localhost
+      //       v === "Unknown" // Allow default value
+      //     );
+      //   },
+      //   message: (props) => `${props.value} is not a valid IP address!`,
+      // },
     },
     token: {
       type: String,

@@ -1,6 +1,22 @@
 const express = require('express');
 const os = require('os');
-const Metric = require('../../models/Metric')
+const Metric = require('../../models/Metric');
+const cron = require('node-cron');
+
+// Schedule the save task to run every minute
+cron.schedule('* * * * *', async () => {
+  const cpuUsage = getCPUUsage();
+  const memoryUsage = ((1 - os.freemem() / os.totalmem()) * 100).toFixed(2);
+
+  try {
+    const newMetric = new Metric({ cpuUsage, memoryUsage });
+    await newMetric.save();
+    // console.log('Metric saved successfully:', { cpuUsage, memoryUsage });
+  } catch (err) {
+    console.error('Error saving metric:', err);
+  }
+});
+
 
 const router = express.Router();
 

@@ -7,31 +7,38 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const validateToken = async () => {
+    const validateAndRefreshToken = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log("[DEBUG]" + location.pathname);
+
         if (!token) {
+          // Attempt to refresh the token
           const response = await API.post("/auth/refresh-token");
-          localStorage.setItem('token', response.data.token);
-        }
-        if (token) {
-          // const token = localStorage.getItem("token");
-          // const response = await API.get("/auth/verifyToken");
-          navigate("/dashboard");
-        } else if (location.pathname === "/register" || location.pathname === "/") {
-          navigate(location.pathname);
+          if(response.status === 401) {
+            navigate("/login");
+          }
+          else{
+            localStorage.setItem("token", response.data.token);
+          }
         } else {
-          navigate("/login");
+          // Validate the current token
+          await API.get("/auth/verifyToken");
+        }
+
+        // Redirect to the dashboard if authenticated
+        if (location.pathname === "/login" || location.pathname === "/register") {
+          navigate("/dashboard");
         }
       } catch (err) {
-        console.error("Token validation failed:", err);
+        console.error("Token validation or refresh failed:", err);
+
+        // Clear the localStorage and redirect to login
         localStorage.removeItem("token");
         navigate("/login");
       }
     };
 
-    validateToken();
+    validateAndRefreshToken();
   }, [navigate]);
 
   return (
