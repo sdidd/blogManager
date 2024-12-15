@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";import { Outlet, Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import API from "../api";
 import roles from "../utils/roles";
 import Logout from "./Logout";
 
-import HolidaysComponent from "./dashboard/HolidaysComponent";
+// import HolidaysComponent from "./dashboard/HolidaysComponent";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
   const [user, setUser] = useState(null);
   const [showDefaultContent, setShowDefaultContent] = useState(true); // Toggle default widgets
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,9 +38,12 @@ const Dashboard = () => {
       <nav className="navbar navbar-dark bg-dark rounded p-2">
         <span className="navbar-brand">Dashboard</span>
         <div className="ml-auto d-flex align-items-center">
-          <Link className="btn btn-success mr-2" to="images" onClick={() => setShowDefaultContent(false)}>
-            Images
+          <Link className="btn btn-success mr-2" to="drives" onClick={() => setShowDefaultContent(false)}>
+            Cloud Storage
           </Link>
+          {/* <Link className="btn btn-success mr-2" to="images" onClick={() => setShowDefaultContent(false)}>
+            Images
+          </Link> */}
           {userRole === roles.admin && (
             <Link className="btn btn-danger mr-2" to="admindashboard" onClick={() => setShowDefaultContent(false)}>
               Admin Panel
@@ -90,7 +93,7 @@ const Dashboard = () => {
       {showDefaultContent ? (
         <div className="row mt-4">
           <div className="col-md-6 mb-3">
-            <HolidaysComponent />
+            {/* <HolidaysComponent /> */}
           </div>
           {/* <div className="col-md-6 mb-3">
             <GeoLocationComponent />

@@ -6,18 +6,19 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import Profile from "./components/Profile";
-import Results from "./components/Results";
+// import Results from "./components/Results";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import RoleManagement from "./components/admin/RoleManagement";
-import roles from "./utils/roles";
+// import roles from "./utils/roles";
 import Home from "./components/Home";
 import UserManagement from "./components/admin/UserManagement";
 import SessionManagement from "./components/admin/SessionManagement";
 import LogsManagement from "./components/admin/LogsManagement";
 import Redis from "./components/development/Redis";
-import ImageUploader from "./components/dashboard/ImageUploader";
+// import ImageUploader from "./components/dashboard/ImageUploader";
 import MetricManagement from "./components/admin/MetricManagement";
+import DriveManager from "./components/dashboard/DriveManager";
 
 const Router = createBrowserRouter([
   {
@@ -40,9 +41,13 @@ const Router = createBrowserRouter([
                 path: "profile", // Nested inside Dashboard
                 element: <Profile />,
               },
+              // {
+              //   path: "images", // Nested inside Dashboard
+              //   element: <ImageUploader />,
+              // },
               {
-                path: "images", // Nested inside Dashboard
-                element: <ImageUploader />,
+                path: "drives", // Nested inside Dashboard
+                element: <DriveManager />,
               },
               {
                 path: "admindashboard",

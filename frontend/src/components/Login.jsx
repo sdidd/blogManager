@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/register.css";
 import { IoHome } from "react-icons/io5";
@@ -29,7 +29,8 @@ const Login = () => {
   return (
     <div className="container mt-5 col-sm-5 mx-auto">
       <Link to="/" className="vertical-bar">
-        <IoHome /><span>Home</span>
+        <IoHome />
+        <span>Home</span>
       </Link>
       <h1 className="text-center mb-4">Login</h1>
       {error && (

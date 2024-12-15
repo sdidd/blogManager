@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";import API from "../../api";
-import ReactImageZoom from "react-image-zooom";
+// import ReactImageZoom from "react-image-zooom";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL; // your backend URL
 
@@ -98,18 +98,18 @@ const ImageUploader = () => {
                       </div>
                       <div className="modal-body">
                         {/* Make the image bigger inside the modal */}
-                        {/* <img
+                        <img
                           src={`${BASE_URL}${url}`}
                           alt={`Full Image-${index}`}
                           className="w-100" // Ensure the image fills the width of the modal
                           style={{ maxHeight: "100vh", objectFit: "contain" }} // Control the height and maintain aspect ratio
-                        /> */}
-                        <ReactImageZoom
+                        />
+                        {/* <ReactImageZoom
                           src={`${BASE_URL}${url}`}
                           alt={`Full Image-${index}`}
                           className="w-100" // Ensure the image fills the width of the modal
                           style={{ maxHeight: "100vh", objectFit: "contain" }}
-                        />
+                        /> */}
                       </div>
                     </div>
                   </div>

@@ -14,7 +14,9 @@ const sessionRoute = require('./routes/session');
 const dashboardApiRoute = require('./routes/api/dashboard');
 const redisRouter = require('./routes/api/redis');
 const imageRouter = require('./routes/api/image');
-const metricRouter = require('./routes/api/metrics')
+const metricRouter = require('./routes/api/metrics');
+const driveRouter = require('./routes/api/drive');
+const updateRouter = require("./routes/api/updates")
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use('/api/dashboard', dashboardApiRoute);
 app.use("/api/redis", redisRouter);  // Mount the redisRouter at /api/redis
 app.use('/api/image', imageRouter);
 app.use('/api/metrics', metricRouter);
+app.use('/api/drive', driveRouter);
+app.use('/api/updates', updateRouter);
 
 app.use("/uploads", express.static("uploads"));
 
