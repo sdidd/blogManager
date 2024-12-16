@@ -1,5 +1,6 @@
 const { RedisMemoryServer } = require("redis-memory-server");
 const redis = require("redis");
+require('dotenv').config();
 
 let RedisClient;
 let PubSubClient;
