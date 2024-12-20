@@ -4,19 +4,31 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newPassword, setNewPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState(""); // For filtering users by role
 
   useEffect(() => {
     fetchUsers();
     fetchRoles();
   }, []);
 
+  useEffect(() => {
+    // Filter users when selectedRole changes
+    if (selectedRole) {
+      setFilteredUsers(users.filter(user => user.role?._id === selectedRole));
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [selectedRole, users]);
+
   const fetchUsers = async () => {
     try {
       const response = await API.get("/admin/users");
       setUsers(response.data?.users || []);
+      setFilteredUsers(response.data?.users || []); // Set filtered users on fetch
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -125,8 +137,25 @@ const UserManagement = () => {
   return (
     <div className="container mt-5">
       <h1>User Management</h1>
+      
+      {/* Filter by Role Dropdown */}
+      <div className="mb-4">
+        <label htmlFor="roleFilter" className="form-label">Filter by Role</label>
+        <select
+          id="roleFilter"
+          className="form-select"
+          value={selectedRole}
+          onChange={(e) => setSelectedRole(e.target.value)}
+        >
+          <option value="">All Roles</option>
+          {roles.map((role) => (
+            <option key={role._id} value={role._id}>{role.name}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="row">
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <div className="col-md-4 mb-4" key={user._id}>
             <div className="card" onClick={() => setSelectedUser(user)} style={{ cursor: "pointer" }}>
               <img

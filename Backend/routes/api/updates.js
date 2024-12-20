@@ -1,14 +1,14 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express");const router = express.Router();
 
 // Mock database or hardcoded latest update message
 // Mock database or hardcoded latest update messages
 const latestUpdate = [
-    { message: "Removed Image Uploading", type: "remove" },
-    { message: "Replaced it with Cloud Storage with option to make Drives", type: "add" },
-    { message: "Some UI Changes", type: "add" },
-    { message: "Internal Changes", type: "add" },
-  ];
+  { id: "1", message: "Removed Image Uploading", type: "remove" },
+  { id: "2", message: "Removed Cloud Storage(was not good)", type: "remove" },
+  { id: "3", message: "Some UI Changes", type: "add" },
+  { id: "4", message: "Internal Changes", type: "add" },
+  { id: "5", message: "Added email service for admin", type: "add" },
+];
 
 // GET /updates/latest - Fetch latest update message
 router.get("/latest", (req, res) => {

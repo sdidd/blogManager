@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import API from "../api";
-import roles from "../utils/roles";
-import Logout from "./Logout";
+import API from "../../api";
+import roles from "../../utils/roles";
+import Logout from "../Logout";
 
 // import HolidaysComponent from "./dashboard/HolidaysComponent";
 
@@ -36,11 +36,11 @@ const Dashboard = () => {
     <div className="container">
       {/* Navbar */}
       <nav className="navbar navbar-dark bg-dark rounded p-2">
-        <span className="navbar-brand">Dashboard</span>
+        <Link className="navbar-brand" to='/dashboard'>Dashboard</Link>
         <div className="ml-auto d-flex align-items-center">
-          <Link className="btn btn-success mr-2" to="drives" onClick={() => setShowDefaultContent(false)}>
+          {/* <Link className="btn btn-success mr-2" to="drives" onClick={() => setShowDefaultContent(false)}>
             Cloud Storage
-          </Link>
+          </Link> */}
           {/* <Link className="btn btn-success mr-2" to="images" onClick={() => setShowDefaultContent(false)}>
             Images
           </Link> */}

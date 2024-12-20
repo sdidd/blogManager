@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const authMiddleware = require('./middleware/authMiddleware')
 require('dotenv').config();
 
 // Import Routes
@@ -57,6 +58,7 @@ app.use('/api/updates', updateRouter);
 
 app.use("/uploads", express.static("uploads"));
 
+app.use(authMiddleware);
 
 // Fallback route to redirect to login if unauthorized
 app.use((req, res, next) => {
