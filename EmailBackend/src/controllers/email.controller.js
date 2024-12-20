@@ -45,10 +45,10 @@ const sendEmails = async (req, res) => {
     let emailContent = preprocessUpdatesForEmail(req.body.text);
     // console.log(emailContent);
     
-    // const emailQueue = await emailQueuePromise;
-    // // Add email job to the queue
-    // console.log("[INFO] Putting email in queue!!");
-    // await emailQueue.add({ to: emails, subject: req.body.subject, html: emailContent});
+    const emailQueue = await emailQueuePromise;
+    // Add email job to the queue
+    console.log("[INFO] Putting email in queue!!");
+    await emailQueue.add({ to: emails, subject: req.body.subject, html: emailContent});
 
     // await emailService.sendBulkEmails();
 
