@@ -50,12 +50,14 @@ router.post("/login", async (req, res) => {
     await RedisClient.hSet(`session:${token}`, "data", sessionDataStr);
     await RedisClient.expire(`session:${token}`, parseInt(process.env.JWT_EXPIRATION || "3600", 10));
 
-    // Send refresh token as HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+      domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : "localhost",
+      path: "/", // Allow the cookie to be accessible across all paths
     });
+    
 
     // Manually log login action
     const logData = {

@@ -4,7 +4,7 @@ import App from "./App";
 import Error from "./components/Error";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard/Dashboard";
 import Profile from "./components/Profile";
 // import Results from "./components/Results";
 import PrivateRoute from "./components/PrivateRoute";
@@ -18,7 +18,8 @@ import LogsManagement from "./components/admin/LogsManagement";
 import Redis from "./components/development/Redis";
 // import ImageUploader from "./components/dashboard/ImageUploader";
 import MetricManagement from "./components/admin/MetricManagement";
-import DriveManager from "./components/dashboard/DriveManager";
+// import DriveManager from "./components/dashboard/DriveManager";
+import EmailManagement from "./components/admin/EmailManagment";
 
 const Router = createBrowserRouter([
   {
@@ -45,10 +46,10 @@ const Router = createBrowserRouter([
               //   path: "images", // Nested inside Dashboard
               //   element: <ImageUploader />,
               // },
-              {
-                path: "drives", // Nested inside Dashboard
-                element: <DriveManager />,
-              },
+              // {
+              //   path: "drives", // Nested inside Dashboard
+              //   element: <DriveManager />,
+              // },
               {
                 path: "admindashboard",
                 element: <PrivateRoute requiredPermissions={["view:admindashboard"]} />, // Protected admin dashboard
@@ -62,6 +63,7 @@ const Router = createBrowserRouter([
                       { path: "log-management", element: <LogsManagement /> },
                       { path: "session-management", element: <SessionManagement /> },
                       { path: "metrics-management", element: <MetricManagement /> },
+                      {path:"email-management", element: <EmailManagement/>}
                     ],
                     errorElement: <Error />,
                   },

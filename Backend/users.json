@@ -1,0 +1,68 @@
+[
+  {
+    "username": "UserOne",
+    "age": 25,
+    "location": "New York",
+    "image": "userone-profile.jpg",
+    "branch": "Engineering",
+    "standard": 12,
+    "role": "64a3fcd56e913f1a5ef9e003",
+    "email": "userone@example.com",
+    "isVerified": true,
+    "data": {
+      "id": 101,
+      "name": "John Doe",
+      "password": "$2a$12$.54ys3qxCgBUDOYI7qKJcuKg9bfz9/iVorg/1Z1TJCCedEfRIJS4u"
+    },
+    "fees": {
+      "paid": true,
+      "remaining": 0,
+      "total": 500,
+      "lastDate": "2024-01-15T00:00:00Z"
+    }
+  },
+  {
+    "username": "UserTwo",
+    "age": 22,
+    "location": "Los Angeles",
+    "image": "usertwo-profile.jpg",
+    "branch": "Science",
+    "standard": 11,
+    "role": "64a3fcd56e913f1a5ef9e001",
+    "email": "usertwo@example.com",
+    "isVerified": false,
+    "data": {
+      "id": 102,
+      "name": "Jane Smith",
+      "password": "$2a$12$.54ys3qxCgBUDOYI7qKJcuKg9bfz9/iVorg/1Z1TJCCedEfRIJS4u"
+    },
+    "fees": {
+      "paid": false,
+      "remaining": 300,
+      "total": 500,
+      "lastDate": "2024-02-10T00:00:00Z"
+    }
+  },
+  {
+    "username": "UserThree",
+    "age": 30,
+    "location": "Chicago",
+    "image": "userthree-profile.jpg",
+    "branch": "Arts",
+    "standard": 12,
+    "role": "64a3fcd56e913f1a5ef9e001",
+    "email": "userthree@example.com",
+    "isVerified": true,
+    "data": {
+      "id": 103,
+      "name": "Mike Johnson",
+      "password": "$2a$12$.54ys3qxCgBUDOYI7qKJcuKg9bfz9/iVorg/1Z1TJCCedEfRIJS4u"
+    },
+    "fees": {
+      "paid": false,
+      "remaining": 200,
+      "total": 400,
+      "lastDate": "2024-03-20T00:00:00Z"
+    }
+  }
+]

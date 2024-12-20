@@ -45,10 +45,9 @@ const App = () => {
         }
       } catch (err) {
         console.error("Token validation or refresh failed:", err);
-
         // Clear the localStorage and redirect to login
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       }
     };
 

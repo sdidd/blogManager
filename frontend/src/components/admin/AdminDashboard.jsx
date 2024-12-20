@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
@@ -31,6 +31,11 @@ const AdminDashboard = () => {
         <li className="nav-item">
           <NavLink to="metrics-management" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             Metrics Management
+          </NavLink>
+        </li>
+        <li className="nav-item">
+          <NavLink to="email-management" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Email Management
           </NavLink>
         </li>
         {/* Add more links as needed */}
