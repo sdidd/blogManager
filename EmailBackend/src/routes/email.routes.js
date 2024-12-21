@@ -8,11 +8,12 @@ const {
   removeRecipient // Add the new route here
 } = require("../controllers/email.controller");
 const authMiddleware = require("../middlewares/authMiddleware");
+const sessionMiddleware = require('../middlewares/sessionMiddleware');
 
-router.post('/send', authMiddleware, sendEmail);
-router.post("/add-recipient", authMiddleware, addRecipient);
-router.get("/recipients", authMiddleware, getRecipients);
-router.post("/send-emails", authMiddleware, sendEmails);
-router.delete("/remove-recipient/:id", authMiddleware, removeRecipient); // New route for removing recipient
+router.post('/send', authMiddleware,sessionMiddleware, sendEmail);
+router.post("/add-recipient", authMiddleware,sessionMiddleware, addRecipient);
+router.get("/recipients", authMiddleware,sessionMiddleware, getRecipients);
+router.post("/send-emails", authMiddleware,sessionMiddleware, sendEmails);
+router.delete("/remove-recipient/:id", authMiddleware,sessionMiddleware, removeRecipient); // New route for removing recipient
 
 module.exports = router;

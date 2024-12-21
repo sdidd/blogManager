@@ -1,5 +1,4 @@
-const { RedisMemoryServer } = require("redis-memory-server");
-const redis = require("redis");
+const { RedisMemoryServer } = require("redis-memory-server");const redis = require("redis");
 
 let RedisClient;
 let PubSubClient;
@@ -33,11 +32,11 @@ const setupRedis = async () => {
     }
   } else {
     try {
-      console.log(`[INFO] Starting in-memory Redis server for development...`);
+      // Development setup with standalone RedisMemoryServer
+      redisHost = "127.0.0.1"; // Host for standalone RedisMemoryServer
+      redisPort = 6379; // Port for standalone RedisMemoryServer
 
-      const redisServer = new RedisMemoryServer();
-      redisHost = await redisServer.getHost();
-      redisPort = await redisServer.getPort();
+      console.log(`[INFO] Connecting to shared in-memory Redis at ${redisHost}:${redisPort}`);
 
       RedisClient = redis.createClient({ socket: { host: redisHost, port: redisPort } });
       PubSubClient = redis.createClient({ socket: { host: redisHost, port: redisPort } });

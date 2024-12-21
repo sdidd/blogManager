@@ -1,6 +1,6 @@
 const { RedisMemoryServer } = require("redis-memory-server");
 const redis = require("redis");
-require('dotenv').config();
+require("dotenv").config();
 
 let RedisClient;
 let PubSubClient;
@@ -20,16 +20,13 @@ let PubSubClient;
         socket: { host, port: Number(port) },
       };
     } else {
-      // Development Configuration with In-Memory Redis
-      const redisServer = new RedisMemoryServer();
-      const host = await redisServer.getHost();
-      const port = await redisServer.getPort();
+      // Development setup with standalone RedisMemoryServer
+      const redisHost = "127.0.0.1"; // Host for standalone RedisMemoryServer
+      const redisPort = 6379; // Port for standalone RedisMemoryServer
 
-      console.log(`[DEBUG] In-memory Redis running at ${host}:${port}`);
+      console.log(`[INFO] Connecting to shared in-memory Redis at ${redisHost}:${redisPort}`);
 
-      redisConfig = {
-        socket: { host, port },
-      };
+      redisConfig = { socket: { host: redisHost, port: redisPort } };
     }
 
     // Create the regular Redis client for non-Pub/Sub commands
