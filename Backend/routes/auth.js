@@ -1,4 +1,5 @@
-const express = require("express");const jwt = require("jsonwebtoken");
+const express = require("express");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const emailUser = require("../utils/emailUtils");
@@ -8,6 +9,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const { getRedisClient } = require("../utils/redis/redisConfig");
 const logAuditTrail = require("../utils/logUtils");
 const Logs = require("../models/AuditTrail");
+const crypto = require("crypto");
 require("dotenv").config();
 
 // Login Route
@@ -57,7 +59,6 @@ router.post("/login", async (req, res) => {
       domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : "localhost",
       path: "/", // Allow the cookie to be accessible across all paths
     });
-    
 
     // Manually log login action
     const logData = {
@@ -84,9 +85,10 @@ router.post("/register", async (req, res) => {
 
     // Validate required fields
     if (!data || !data.password || !data.name) {
-      return res.status(400).json({ error: "Name and password are required in data object" });
+      return res.status(400).json({ error: "Name and password are required in the data object" });
     }
 
+    // Create a new user
     const user = new User({
       username,
       age,
@@ -98,34 +100,39 @@ router.post("/register", async (req, res) => {
       fees,
       data: { ...data },
     });
+
+    // Generate a secure email verification token
+    const token = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationToken = crypto.createHash("sha256").update(token).digest("hex");
+    user.emailVerificationExpires = Date.now() + 60 * 60 * 1000; // Token valid for 1 hour
+
     await user.save();
 
-    // Generate verification token
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${token}`;
-
+    const verificationLink = `${process.env.BASE_URL}/auth/verify-email?token=${token}&email=${email}`;
     await emailUser(
-      user.email,
+      email,
       "Email Verification",
       `Please verify your email by clicking the link: ${verificationLink}`
     );
 
-    // Manually log registration action
+    // Log the registration action
     const logData = {
       userId: user._id,
       action: "REGISTER",
-      ip: req.ip, // Manually pass the IP address
-      details: `User registered with email ${user.email}`,
+      ip: req.ip, // User IP address
+      details: `User registered with email ${email}`,
+      token: "No token",
+      type: "CREATE",
     };
     await Logs.create(logData);
 
     res.status(201).json({ message: "User registered successfully! Please verify your email." });
   } catch (err) {
     console.error("[ERROR] Registration failed:", err.message);
-    res.status(400).json({ error: "Error registering user", details: err.message });
+    res.status(500).json({ error: "Error registering user", details: err.message });
   }
 });
+
 
 // Logout Route (Terminate Session)
 router.post("/logout", authMiddleware, async (req, res) => {
@@ -190,7 +197,7 @@ router.get("/getPermissions", authMiddleware, async (req, res) => {
 
 // Refresh Token Route
 
-router.post("/refresh-token",authMiddleware, async (req, res) => {
+router.post("/refresh-token", authMiddleware, async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
@@ -227,10 +234,7 @@ router.post("/refresh-token",authMiddleware, async (req, res) => {
 
     // Store the new session in Redis
     await RedisClient.hSet(`session:${token}`, "data", sessionDataStr);
-    await RedisClient.expire(
-      `session:${token}`,
-      parseInt(process.env.JWT_EXPIRATION || "3600", 10)
-    );
+    await RedisClient.expire(`session:${token}`, parseInt(process.env.JWT_EXPIRATION || "3600", 10));
 
     // Send the new refresh token as a secure HTTP-only cookie
     res.cookie("refreshToken", newRefreshToken, {
@@ -250,6 +254,127 @@ router.post("/refresh-token",authMiddleware, async (req, res) => {
   } catch (err) {
     console.error("[ERROR] Refresh token failed:", err.message);
     res.status(401).json({ error: "Invalid or expired refresh token", details: err.message });
+  }
+});
+
+// Check Username Availability
+router.get("/check-username/:username", async (req, res) => {
+  const { username } = req.params;
+
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
+  }
+
+  try {
+    const userExists = await User.findOne({ username });
+
+    if (userExists) {
+      return res.status(409).json({ error: "Username is already taken" });
+    }
+
+    res.status(200).json({ message: "Username is available" });
+  } catch (err) {
+    console.error("[ERROR] Check username failed:", err.message);
+    res.status(500).json({ error: "Failed to check username", details: err.message });
+  }
+});
+
+// Check Email Availability
+router.get("/check-email/:email", async (req, res) => {
+  const { email } = req.params;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const emailExists = await User.findOne({ email });
+
+    if (emailExists) {
+      return res.status(409).json({ error: "Email is already registered" });
+    }
+
+    res.status(200).json({ message: "Email is available" });
+  } catch (err) {
+    console.error("[ERROR] Check email failed:", err.message);
+    res.status(500).json({ error: "Failed to check email", details: err.message });
+  }
+});
+
+router.get("/verify-email", async (req, res) => {
+  const { token, email } = req.query;
+
+  if (!token || !email) {
+    return res.send(`
+      <html>
+        <head><title>Email Verification</title></head>
+        <body>
+          <h1>Email Verification Failed</h1>
+          <p>Invalid request: Missing token or email.</p>
+        </body>
+      </html>
+    `);
+  }
+
+  try {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find the user based on the email and token
+    const user = await User.findOne({
+      email,
+      emailVerificationToken: hashedToken,
+      emailVerificationExpires: { $gt: Date.now() }, // Ensure the token hasn't expired
+    });
+
+    if (!user) {
+      return res.send(`
+        <html>
+          <head><title>Email Verification</title></head>
+          <body>
+            <h1>Email Verification Failed</h1>
+            <p>Invalid or expired token.</p>
+          </body>
+        </html>
+      `);
+    }
+
+    // Mark the user as verified
+    user.isVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    // Log the verification action
+    const logData = {
+      userId: user._id,
+      action: "VERIFY",
+      ip: req.ip,
+      token,
+      details: `User verified with email ${email}`,
+      type: "VERIFY",
+    };
+    await Logs.create(logData);
+
+    return res.send(`
+      <html>
+        <head><title>Email Verified</title></head>
+        <body>
+          <h1>Email Verified Successfully</h1>
+          <p>Thank you for verifying your email. You can now log in to your account.</p>
+        </body>
+      </html>
+    `);
+  } catch (err) {
+    console.error("[ERROR] Email verification failed:", err.message);
+    res.status(500).send(`
+      <html>
+        <head><title>Email Verification</title></head>
+        <body>
+          <h1>Email Verification Failed</h1>
+          <p>An error occurred during verification. Please try again later.</p>
+        </body>
+      </html>
+    `);
   }
 });
 

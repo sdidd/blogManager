@@ -72,7 +72,7 @@ const sendEmail = async (req, res) => {
 
     // Add email job to the queue
     console.log("[INFO] Putting email in queue!!");
-    await emailQueue.add({ to, subject, text });
+    await emailQueue.add({ to, subject, html:text });
 
     return res.status(202).json({ message: "Email is being processed" });
   } catch (error) {

@@ -16,6 +16,7 @@ const auditTrailSchema = new mongoose.Schema(
         "ACTION_PERFORMED",
         "LOGOUT",
         "CREATE",
+        "VERIFY",
         "UPDATE",
         "DELETE",
         "READ",

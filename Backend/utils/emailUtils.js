@@ -1,30 +1,18 @@
-const nodemailer = require("nodemailer");
+const emailAPI = require("./api");
 
 module.exports = emailUser = async (to, subject, text) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "127.0.0.1",
-      port: process.env.SMTP_PORT || 1025,
-      secure: process.env.SMTP_SECURE === "true", // Use TLS only in production
-      auth:
-        process.env.SMTP_USER && process.env.SMTP_PASS
-          ? {
-              user: process.env.SMTP_USER,
-              pass: process.env.SMTP_PASS,
-            }
-          : undefined,
-    });
-
-    const mailOptions = {
-      from: "test@local.dev",
-      to,
-      subject,
-      text,
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.messageId}`);
+    const response = await emailAPI.post(
+      "/api/email/send",
+      { to, subject, text },
+      {
+        headers: {
+          "x-secret-key": process.env.REGISTRATION_SECRET, // Add the header
+        },
+      }
+    );
+    console.log(`Email sent successfully: ${response.data.messageId}`);
   } catch (error) {
-    console.log(error);
+    console.error("Error sending email:", error.message);
   }
 };

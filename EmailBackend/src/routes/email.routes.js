@@ -9,8 +9,9 @@ const {
 } = require("../controllers/email.controller");
 const authMiddleware = require("../middlewares/authMiddleware");
 const sessionMiddleware = require('../middlewares/sessionMiddleware');
+const stringMiddleware  = require('../middlewares/stringMiddleware');
 
-router.post('/send', authMiddleware,sessionMiddleware, sendEmail);
+router.post('/send',stringMiddleware, sendEmail);
 router.post("/add-recipient", authMiddleware,sessionMiddleware, addRecipient);
 router.get("/recipients", authMiddleware,sessionMiddleware, getRecipients);
 router.post("/send-emails", authMiddleware,sessionMiddleware, sendEmails);
