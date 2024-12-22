@@ -1,14 +1,15 @@
-import React from "react";import { Link } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import Locations from "./home/Locations";
 
 const Home = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div className="container">
-          <a className="navbar-brand fw-bold" href="/">
-            CoachingPro
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div className="container-fluid">
+          <a className="navbar-brand fw-bold text-primary" href="/">
+            Project Pineapple
           </a>
           <button
             className="navbar-toggler"
@@ -22,25 +23,29 @@ const Home = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
+            <ul className="navbar-nav ms-auto text-center">
               <li className="nav-item">
                 <a className="nav-link" href="#about">
-                  About Us
+                  About
                 </a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#locations">
-                  Locations
+                  Features
                 </a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#contact">
-                  Contact Us
+                  Contact
                 </a>
               </li>
               <li className="nav-item">
-                <Link to="/login" className="btn btn-primary ms-2">
-                  Login
+                <Link
+                  to="/dashboard"
+                  className="btn btn-primary ms-2"
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  Dashboard
                 </Link>
               </li>
             </ul>
@@ -49,25 +54,55 @@ const Home = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="bg-primary text-white text-center py-5">
-        <div className="container">
-          <h1 className="display-4 fw-bold">Welcome to CoachingPro</h1>
-          <p className="lead">Transforming education with experienced mentors and state-of-the-art facilities.</p>
-          <a href="#about" className="btn btn-light btn-lg">
+      <header className="bg-dark text-white text-center py-5">
+        <div className="container-fluid px-3">
+          <h1 className="display-4 fw-bold">Welcome to Project Pineapple</h1>
+          <p className="lead">
+            The open-source platform for sharing and accessing courses freely. Share
+            knowledge, learn without limits, and earn achievements!
+          </p>
+          <a href="#about" className="btn btn-outline-primary btn-lg">
             Learn More
           </a>
         </div>
       </header>
 
       {/* About Us Section */}
-      <section id="about" className="py-5">
-        <div className="container text-center">
-          <h2 className="fw-bold mb-4">About Us</h2>
+      <section id="about" className="py-5 bg-secondary text-white">
+        <div className="container text-center px-4">
+          <h2 className="fw-bold mb-4">About Project Pineapple</h2>
           <p className="lead">
-            CoachingPro is dedicated to providing top-notch coaching services for students of all ages. With a team of
-            experienced educators and a proven track record of success, we help students achieve their dreams and unlock
-            their potential.
+            Project Pineapple is a futuristic web app designed to democratize education. Anyone can upload
+            courses or register for courses for free. Forget about expensive certifications—focus on
+            gaining knowledge and earning achievements to showcase your learning journey.
           </p>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-5">
+        <div className="container">
+          <h2 className="fw-bold mb-4 text-center">Features</h2>
+          <div className="row g-4">
+            <div className="col-md-6 col-lg-4">
+              <div className="p-4 bg-dark text-white text-center rounded h-100">
+                <h3 className="fw-bold">Free Courses</h3>
+                <p>Access a wide variety of courses without any cost. Knowledge for everyone!</p>
+              </div>
+            </div>
+            <div className="col-md-6 col-lg-4">
+              <div className="p-4 bg-dark text-white text-center rounded h-100">
+                <h3 className="fw-bold">Upload Your Courses</h3>
+                <p>Share your expertise with the world. Contribute to the learning community.</p>
+              </div>
+            </div>
+            <div className="col-md-6 col-lg-4">
+              <div className="p-4 bg-dark text-white text-center rounded h-100">
+                <h3 className="fw-bold">Achievements</h3>
+                <p>Earn badges and achievements to mark your progress and skills.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -75,12 +110,14 @@ const Home = () => {
       <Locations />
 
       {/* Contact Us Section */}
-      <section id="contact" className="py-5">
-        <div className="container text-center">
+      <section id="contact" className="py-5 bg-secondary text-white">
+        <div className="container text-center px-4">
           <h2 className="fw-bold mb-4">Contact Us</h2>
-          <p className="lead">Have questions? Reach out to us, and we'll be happy to assist you!</p>
+          <p className="lead">
+            Have questions? We're here to help. Reach out to us, and let's make education accessible to all.
+          </p>
           <div className="row justify-content-center">
-            <div className="col-md-6">
+            <div className="col-md-8 col-lg-6">
               <form>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
