@@ -5,6 +5,7 @@ const EmailManagement = () => {
   const [recipients, setRecipients] = useState([]);
   const [newRecipient, setNewRecipient] = useState({ email: "", name: "" });
   const [latestUpdates, setLatestUpdates] = useState([]);
+  const [version, setVersion] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -18,13 +19,16 @@ const EmailManagement = () => {
     }
   };
 
-  // Fetch the latest update from the updates backend
+  // Fetch the latest version and its changes
   const fetchLatestUpdate = async () => {
     try {
       const response = await API.get("/api/updates/latest");
-      setLatestUpdates(response.data.updates || "No update available.");
+      const latestVersion = response.data.updates[0]; // Assuming updates are sorted with the latest first
+      setLatestUpdates(latestVersion.changes || []);
+      setVersion(latestVersion.version);
     } catch (error) {
       console.error("Error fetching the latest update:", error);
+      setLatestUpdates("No update available.");
     }
   };
 
@@ -64,18 +68,19 @@ const EmailManagement = () => {
     }
   };
 
-  // Send updates to all recipients
+  // Send only the latest version updates via email
   const sendEmails = async () => {
-    if (!latestUpdates) {
+    if (!latestUpdates || latestUpdates.length === 0) {
       setMessage("No update to send.");
       return;
     }
 
     setLoading(true);
     try {
-      let response = await emailAPI.post("/api/email/send-emails", {
+      const response = await emailAPI.post("/api/email/send-emails", {
         subject: "Latest Updates",
         text: latestUpdates,
+        version: version,
       });
       setMessage(response.data.message);
     } catch (error) {
@@ -129,8 +134,9 @@ const EmailManagement = () => {
           <div className="card p-4">
             <h4>Latest Update</h4>
             <ul className="list-group">
-              {latestUpdates.map((update) => (
-                <li key={update.id} className="list-group-item">
+              {latestUpdates.map((update, index) => (
+                <li key={index} className="list-group-item">
+                  {update.type === "add" ? "+ " : "- "}
                   {update.message}
                 </li>
               ))}
@@ -152,10 +158,7 @@ const EmailManagement = () => {
                 <div>
                   <strong>{recipient.name ? `${recipient.name} (${recipient.email})` : recipient.email}</strong>
                 </div>
-                <button
-                  className="btn btn-danger btn-sm mt-2"
-                  onClick={() => removeRecipient(recipient._id)}
-                >
+                <button className="btn btn-danger btn-sm mt-2" onClick={() => removeRecipient(recipient._id)}>
                   Remove
                 </button>
               </div>

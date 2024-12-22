@@ -5,6 +5,9 @@ const sessionMiddleware = require("../middleware/sessionMiddleware");
 const User = require("../models/User");
 const Result = require("../models/Result");
 const { upload } = require('../utils/uploadUtils');
+const {cdnAPI} = require('../utils/api');
+const FormData = require("form-data"); // Ensure you have this package installed
+
 
 const router = express.Router();
 
@@ -49,32 +52,55 @@ router.get("/results", async (req, res) => {
   }
 });
 
+
 router.post(
   "/uploadimage",
-  upload.single("image"), // Add this middleware
+  upload.single("file"),
   async (req, res) => {
     try {
-      console.log(req.file); // Debugging: Check if the file is received
-
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded." });
       }
 
-      // Save the image URL/path to the user's profile in the database
-      const imagePath = `/uploads/${req.file.filename}`;
-      const userId = req.user.id; // Assuming user ID is in the auth token
+      // Forward the uploaded file to the CDN API
+      const formData = new FormData();
+      formData.append("file", req.file.buffer, req.file.originalname); // Use buffer and originalname
+      // console.log(req.headers.authorization);
+      
+      const cdnResponse = await cdnAPI.post("/upload", formData,{
+        headers: {
+          'Authorization': req.headers.authorization,
+        }
+      });
 
-      await User.findByIdAndUpdate(userId, { image: imagePath }, { new: true });
+      if (!cdnResponse.data || !cdnResponse.data.url) {
+        return res.status(500).json({ error: "Failed to upload image to CDN." });
+      }
+
+      const cdnImageUrl = process.env.CDN_BASE_URL +  cdnResponse.data.url;
+
+      // Update the user's profile with the CDN URL
+      const userId = req.user.id; // Assuming user ID is in the auth token
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { image: cdnImageUrl },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found." });
+      }
 
       res.status(200).json({
         message: "Image uploaded successfully.",
-        image: imagePath,
+        url: cdnImageUrl, // Corrected property name
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal server error." });
+      console.error("Error during image upload:", error.message);
+      res.status(500).json({ error: "Internal server error.", details: error });
     }
   }
 );
+
 
 module.exports = router;

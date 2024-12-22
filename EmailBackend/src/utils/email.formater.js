@@ -1,4 +1,4 @@
-const preprocessUpdatesForEmail = (updates) => {  const emailContent = `
+const preprocessUpdatesForEmail = (updates, version) => {  const emailContent = `
       <html>
         <head>
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -43,7 +43,7 @@ const preprocessUpdatesForEmail = (updates) => {  const emailContent = `
         </head>
         <body>
           <div class="email-container">
-            <h2 class="email-header">New Version Updated</h2>
+            <h2 class="email-header">New Version Updated ${version}</h2>
               <ul class="list-group">
               ${updates
                 .map(

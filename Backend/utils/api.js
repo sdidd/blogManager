@@ -1,5 +1,10 @@
 const axios = require("axios");
 
+const cdnAPI = axios.create({
+  baseURL: process.env.NODE_ENV == "development"?"http://localhost:8080":process.env.CDN_BASE_URL,
+  withCredentials: true, // Enables sending cookies
+})
+
 const emailAPI = axios.create({
   baseURL: process.env.NODE_ENV === "development" 
     ? "http://localhost:4001" 
@@ -10,4 +15,15 @@ const emailAPI = axios.create({
   },
 });
 
-module.exports = emailAPI;
+cdnAPI.interceptors.request.use((config) => {
+  // const token = ;
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  //   if(process.env.NODE_ENV == "development"){
+  //     console.log('Token attached:', config.headers.Authorization);
+  //   }
+  // }
+  config.headers['Content-Type'] =   "multipart/form-data; boundary=<calculated when request is sent>";
+  return config;
+});
+module.exports = {emailAPI, cdnAPI};

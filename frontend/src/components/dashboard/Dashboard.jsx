@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";import { Outlet, Link, useNavigate } from "react-router-dom";
 import API from "../../api";
 import roles from "../../utils/roles";
 import Logout from "../Logout";
@@ -36,7 +35,9 @@ const Dashboard = () => {
     <div className="container">
       {/* Navbar */}
       <nav className="navbar navbar-dark bg-dark rounded p-2">
-        <Link className="navbar-brand" to='/dashboard'>Dashboard</Link>
+        <Link className="navbar-brand" to="/dashboard">
+          Dashboard
+        </Link>
         <div className="ml-auto d-flex align-items-center">
           {/* <Link className="btn btn-success mr-2" to="drives" onClick={() => setShowDefaultContent(false)}>
             Cloud Storage
@@ -62,6 +63,13 @@ const Dashboard = () => {
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
               {user && (
                 <>
+                  <li className="justify-content-center d-flex dropdown-item">
+                    <img
+                      src={user.image}
+                      className="rounded-circle"
+                      style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                    />
+                  </li>
                   <li className="dropdown-item">
                     <strong>Username:</strong> {user.username}
                   </li>
@@ -92,9 +100,7 @@ const Dashboard = () => {
       {/* Main Content */}
       {showDefaultContent ? (
         <div className="row mt-4">
-          <div className="col-md-6 mb-3">
-            {/* <HolidaysComponent /> */}
-          </div>
+          <div className="col-md-6 mb-3">{/* <HolidaysComponent /> */}</div>
           {/* <div className="col-md-6 mb-3">
             <GeoLocationComponent />
           </div> */}

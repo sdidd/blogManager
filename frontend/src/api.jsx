@@ -10,6 +10,7 @@ export const emailAPI = axios.create({
   withCredentials: true, // Enables sending cookies
 })
 
+//Middleware processing of API request
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -30,6 +31,5 @@ emailAPI.interceptors.request.use((config) => {
   }
   return config;
 });
-
 
 export default API;
