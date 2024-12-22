@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import API from "./api";
 
 const App = () => {
@@ -11,7 +10,8 @@ const App = () => {
   const fetchUpdateMessage = async () => {
     try {
       const response = await API.get("/api/updates/latest");
-      setUpdates(response.data.updates);
+      const latestVersion = response.data.updates[0]; // Assuming updates are sorted with the latest first
+      setUpdates(latestVersion.changes || []);
     } catch (err) {
       setUpdates(["No updates at this time."]);
     }

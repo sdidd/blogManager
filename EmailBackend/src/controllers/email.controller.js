@@ -42,7 +42,7 @@ const sendEmails = async (req, res) => {
       return res.status(400).json({ error: "No recipients found" });
     }
     // console.log(req.body.text);
-    let emailContent = preprocessUpdatesForEmail(req.body.text);
+    let emailContent = preprocessUpdatesForEmail(req.body.text, req.body.version);
     // console.log(emailContent);
     
     const emailQueue = await emailQueuePromise;

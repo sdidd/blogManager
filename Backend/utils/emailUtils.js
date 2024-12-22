@@ -1,4 +1,4 @@
-const emailAPI = require("./api");
+const {emailAPI} = require("./api");
 
 module.exports = emailUser = async (to, subject, text) => {
   try {

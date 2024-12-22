@@ -8,6 +8,8 @@ import (
 	"project-cdn/config"
 	"project-cdn/handlers"
 	logger "project-cdn/utils"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -26,11 +28,34 @@ func main() {
 		}
 	}
 
+	// Define allowed origins based on environment
+	var allowedOrigins []string
+	goEnv := os.Getenv("GO_ENV")
+	if goEnv == "production" {
+		allowedOrigins = []string{"*.onrender.com"} // Allow all subdomains of onrender.com
+		logInstance.Info("Production environment detected. Allowing *.onrender.com")
+	} else {
+		allowedOrigins = []string{"http://localhost:3000", "http://localhost:4000", "http://localhost:4001"}
+		logInstance.Info("Development environment detected. Allowing localhost origins")
+	}
+
+	// Setup CORS middleware
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   allowedOrigins,
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+	})
+
 	// Setup routes
-	http.HandleFunc("/upload", handlers.UploadHandler(cfg, logInstance))
-	http.HandleFunc("/download/", handlers.DownloadHandler(cfg, logInstance))
-	http.HandleFunc("/delete/", handlers.DeleteHandler(cfg, logInstance))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/upload", handlers.UploadHandler(cfg, logInstance))
+	mux.HandleFunc("/download/", handlers.DownloadHandler(cfg, logInstance))
+	mux.HandleFunc("/delete/", handlers.DeleteHandler(cfg, logInstance))
+
+	// Wrap routes with CORS middleware
+	handlerWithCors := corsHandler.Handler(mux)
 
 	logInstance.Info("CDN Server running on " + cfg.ServerPort)
-	log.Fatal(http.ListenAndServe(cfg.ServerPort, nil))
+	log.Fatal(http.ListenAndServe(cfg.ServerPort, handlerWithCors))
 }
