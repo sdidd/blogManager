@@ -5,3 +5,5 @@ frontend/.env
 Backend/.env
 EmailBackend/node_modules/*
 EmailBackend/.env
+node_modules/*
+redis-binaries

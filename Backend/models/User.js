@@ -4,6 +4,8 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const Role = require("./Role");
 
+const defaultUserImage = "https://static.vecteezy.com/system/resources/previews/013/042/571/original/default-avatar-profile-icon-social-media-user-photo-in-flat-style-vector.jpg";
+
 const mongoUri = process.env.MONGO_URI;
 
 if (!mongoUri) {
@@ -21,10 +23,10 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, default: "NewUser" },
   age: { type: Number, default: 18 },
   location: { type: String, default: "Unknown" },
-  image: { type: String, default: "default-profile.jpg" },
+  image: { type: String, default: defaultUserImage },
   branch: { type: String, default: "General" },
   standard: { type: Number, default: 11 },
-  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true, default: "64a3fcd56e913f1a5ef9e001" },
   email: { type: String, required: true, unique: true },
   isVerified: { type: Boolean, default: false },
   emailVerificationToken: { type: String },
