@@ -6,12 +6,15 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [updates, setUpdates] = useState([]); // Update message state
+  const [showUpdates, setShowUpdates] = useState(true); // Controls update modal visibility
+  const [version, setVersion] = useState("");
 
   // Fetch the latest update message
   const fetchUpdateMessage = async () => {
     try {
       const response = await API.get("/api/updates/latest");
       const latestVersion = response.data.updates[0]; // Assuming updates are sorted with the latest first
+      setVersion(latestVersion.version);
       setUpdates(latestVersion.changes || [{ id: "1", message: "No updates at this time", type: "remove" }]);
     } catch (err) {
       setUpdates(["No updates at this time."]);
@@ -62,8 +65,9 @@ const App = () => {
           <Outlet /> {/* Render nested routes */}
         </main>
       </div>
+
       {/* Update Message Box - Shows on all pages */}
-      {updates.length > 0 && (
+      {updates.length > 0 && showUpdates && (
         <div
           style={{
             position: "fixed",
@@ -78,7 +82,23 @@ const App = () => {
             zIndex: 1000,
           }}
         >
-          <h6 className="mb-2 text-primary">📢 New Update</h6>
+          <div className="d-flex justify-content-between align-items-center">
+            <h6 className="mb-2 text-primary">📢 New Update {version}</h6>
+            {/* Close button */}
+            <button
+              onClick={() => setShowUpdates(false)}
+              style={{
+                background: "none",
+                border: "none",
+                fontSize: "16px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                color: "#555",
+              }}
+            >
+              ✖
+            </button>
+          </div>
           <ul style={{ paddingLeft: "1rem" }}>
             {updates.map((update, index) => (
               <li
@@ -95,7 +115,10 @@ const App = () => {
           </ul>
         </div>
       )}
-      <footer className="mt-auto text-center py-3 bg-light">Copyright @ Pineapple Solutions</footer>
+
+      <footer className="mt-auto text-center py-3 bg-light">
+        Copyright @ Pineapple Solutions
+      </footer>
     </>
   );
 };
