@@ -10,10 +10,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    age: "",
     name: "",
-    branch: "",
-    standard: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -83,28 +80,20 @@ const Register = () => {
     if (
       !formData.username ||
       !formData.email ||
-      !formData.password ||
-      !formData.name ||
-      !formData.branch ||
-      !formData.standard
+      !formData.password 
     ) {
       setError("Please fill in all required fields");
       return;
     }
 
     try {
-      const defaultRoleId = "64a3fcd56e913f1a5ef9e001"; // Default Role ID
-
       // Restructure the payload to match the schema
       const payload = {
         username: formData.username,
         age: formData.age,
-        branch: formData.branch,
-        standard: formData.standard,
         email: formData.email,
-        role: defaultRoleId, // Assign default role
         data: {
-          name: formData.name,
+          name: formData.name || formData.username,
           password: formData.password,
         },
       };
@@ -183,10 +172,6 @@ const Register = () => {
             />
           </div>
           <div className="mb-3">
-            <label>Age:</label>
-            <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-control" />
-          </div>
-          <div className="mb-3">
             <label>Full Name:</label>
             <input
               type="text"
@@ -196,32 +181,6 @@ const Register = () => {
               className="form-control"
               required
             />
-          </div>
-          <div className="mb-3">
-            <label>Branch</label>
-            <select name="branch" value={formData.branch} onChange={handleChange} className="form-select" required>
-              <option value="" disabled>
-                Select your branch
-              </option>
-              <option value="mhtcet">MHT-CET</option>
-              <option value="jee">JEE</option>
-              <option value="neet">NEET</option>
-              <option value="law">Law</option>
-            </select>
-          </div>
-          <div className="mb-3">
-            <label>Standard:</label>
-            <select name="standard" value={formData.standard} onChange={handleChange} className="form-select" required>
-              <option value="" disabled>
-                Select your standard
-              </option>
-              <option value="11">
-                11<sup>th</sup> Standard
-              </option>
-              <option value="12">
-                12<sup>th</sup> Standard
-              </option>
-            </select>
           </div>
           <div className="d-flex justify-content-center gap-3">
             <button type="submit" className="btn btn-primary">

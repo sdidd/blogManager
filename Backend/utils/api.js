@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const cdnAPI = axios.create({
-  baseURL: process.env.NODE_ENV == "development"?"http://localhost:8080":process.env.CDN_BASE_URL,
+  baseURL: process.env.NODE_ENV == "development"?process.env.CDN_BASE_URL:process.env.CDN_BASE_URL,
   withCredentials: true, // Enables sending cookies
 })
 

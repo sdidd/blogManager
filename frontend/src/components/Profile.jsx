@@ -60,7 +60,7 @@ const Profile = () => {
 
       setUser((prevUser) => ({
         ...prevUser,
-        image: response.data.image,
+        image: response.data.url,
       }));
 
       setShowModal(false);

@@ -2,7 +2,16 @@ const express = require("express");const router = express.Router();
 
 // Mock database or hardcoded latest update message
 // Mock database or hardcoded latest update messages
+// Mock database or hardcoded latest update messages
 const latestUpdate = [
+  {
+    version: "0.2.0",
+    changes: [
+      { id: "10", message: "Fixed the register page", type: "add" },
+      { id: "11", message: "Made the profile picture faster to load", type: "add" },
+      { id: "12", message: "Backend changes", type: "remove" },
+    ],
+  },
   {
     version: "0.1.1",
     changes: [
@@ -23,6 +32,7 @@ const latestUpdate = [
     ],
   },
 ];
+
 
 // GET /updates/latest - Fetch latest update message
 router.get("/latest", (req, res) => {

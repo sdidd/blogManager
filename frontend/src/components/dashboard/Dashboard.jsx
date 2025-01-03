@@ -73,9 +73,6 @@ const Dashboard = () => {
                   <li className="dropdown-item">
                     <strong>Username:</strong> {user.username}
                   </li>
-                  <li className="dropdown-item">
-                    <strong>Branch:</strong> {user.branch}
-                  </li>
                   <li>
                     <hr className="dropdown-divider" />
                   </li>

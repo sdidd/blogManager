@@ -1,94 +1,94 @@
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const AWS = require("aws-sdk"); // Only if using cloud storage
+const { S3Client, PutObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const dotenv = require("dotenv");
+
+dotenv.config(); // Load environment variables
+
 const router = express.Router();
 
-// Select Storage Type: Local or Cloud (S3)
-const useCloudStorage = false; // Set to true for cloud storage (AWS S3)
-let uploadDir = path.join(__dirname, "../../uploads");
-
-// Ensure the uploads directory exists (for local storage)
-if (!fs.existsSync(uploadDir) && !useCloudStorage) {
-  fs.mkdirSync(uploadDir); // Create it if it doesn't exist
-}
-
-// Cloud storage configuration (if AWS S3 is used)
-let s3;
-if (useCloudStorage) {
-  AWS.config.update({ region: "us-east-1" }); // Set your region
-  s3 = new AWS.S3();
-}
-
-const storage = useCloudStorage
-  ? multer.memoryStorage() // Cloud storage (use memory for file uploads)
-  : multer.diskStorage({
-      destination: (req, file, cb) => {
-        cb(null, uploadDir);
-      },
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
-      }
-    });
-
-const upload = multer({ storage: storage });
-
-// API Route to handle image uploads
-router.post("/upload", upload.single("image"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+// Validate required environment variables
+const requiredEnvVars = ["AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_BUCKET_NAME"];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing required environment variable: ${envVar}`);
+    process.exit(1);
   }
+}
 
-  // If using cloud storage
-  if (useCloudStorage) {
-    const params = {
-      Bucket: "YOUR_BUCKET_NAME",
-      Key: `images/${req.file.originalname}`,
+// AWS S3 Client Configuration
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+// Bucket name from environment variables
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
+
+// Configure Multer for in-memory storage
+const upload = multer({ storage: multer.memoryStorage() });
+
+/**
+ * @route   POST /upload
+ * @desc    Uploads an image to S3
+ * @access  Public
+ */
+router.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const fileKey = `images/${Date.now()}-${req.file.originalname}`;
+
+    const uploadParams = {
+      Bucket: BUCKET_NAME,
+      Key: fileKey,
       Body: req.file.buffer,
-      ContentType: req.file.mimetype
+      ContentType: req.file.mimetype,
     };
-    s3.upload(params, (err, data) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(200).json({
-        message: "File uploaded successfully to cloud",
-        imageUrl: data.Location, // Cloud URL
-      });
+
+    await s3Client.send(new PutObjectCommand(uploadParams));
+
+    return res.status(200).json({
+      message: "File uploaded successfully to S3",
+      imageUrl: `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`,
     });
-  } else {
-    // Local storage path
-    res.status(200).json({
-      message: "File uploaded successfully",
-      imageUrl: `/uploads/${req.file.filename}`, // Local file URL
-    });
+  } catch (error) {
+    console.error("Error uploading to S3:", error);
+    return res.status(500).json({ error: "Failed to upload file" });
   }
 });
 
-// API Route to get all uploaded image filenames
-router.get("/images", (req, res) => {
-  if (useCloudStorage) {
-    // For cloud storage, list the files in S3
-    const params = {
-      Bucket: "YOUR_BUCKET_NAME",
+/**
+ * @route   GET /images
+ * @desc    Retrieves all uploaded image URLs from S3
+ * @access  Public
+ */
+router.get("/images", async (req, res) => {
+  try {
+    const listParams = {
+      Bucket: BUCKET_NAME,
       Prefix: "images/",
     };
-    s3.listObjectsV2(params, (err, data) => {
-      if (err) {
-        return res.status(500).json({ error: "Failed to fetch images" });
-      }
-      const imageUrls = data.Contents.map(file => file.Key); // Cloud file keys
-      res.status(200).json(imageUrls);
-    });
-  } else {
-    // Local storage fetching
-    fs.readdir(uploadDir, (err, files) => {
-      if (err) {
-        return res.status(500).json({ error: "Failed to fetch images" });
-      }
-      const imageUrls = files.map(file => `/uploads/${file}`);
-      res.status(200).json(imageUrls);
-    });
+
+    const data = await s3Client.send(new ListObjectsV2Command(listParams));
+
+    if (!data.Contents || data.Contents.length === 0) {
+      return res.status(404).json({ message: "No images found" });
+    }
+
+    const imageUrls = data.Contents.map((file) => 
+      `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.Key}`
+    );
+
+    return res.status(200).json(imageUrls);
+  } catch (error) {
+    console.error("Error fetching images from S3:", error);
+    return res.status(500).json({ error: "Failed to fetch images" });
   }
 });
 
