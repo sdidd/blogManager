@@ -17,7 +17,8 @@ const redisRouter = require('./routes/api/redis');
 const imageRouter = require('./routes/api/image');
 const metricRouter = require('./routes/api/metrics');
 const driveRouter = require('./routes/api/drive');
-const updateRouter = require("./routes/api/updates")
+const updateRouter = require("./routes/api/updates");
+const blogRouter = require('./routes/api/blog')
 
 const app = express();
 
@@ -55,8 +56,9 @@ app.use('/api/image', imageRouter);
 app.use('/api/metrics', metricRouter);
 app.use('/api/drive', driveRouter);
 app.use('/api/updates', updateRouter);
+app.use('/api/blog', blogRouter);
 
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 
 app.use(authMiddleware);
 

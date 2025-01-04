@@ -9,17 +9,18 @@ import Profile from "./components/Profile";
 // import Results from "./components/Results";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
-import RoleManagement from "./components/admin/RoleManagement";
+// import RoleManagement from "./components/admin/RoleManagement";
 // import roles from "./utils/roles";
 import Home from "./components/Home";
-import UserManagement from "./components/admin/UserManagement";
-import SessionManagement from "./components/admin/SessionManagement";
-import LogsManagement from "./components/admin/LogsManagement";
+// import UserManagement from "./components/admin/UserManagement";
+// import SessionManagement from "./components/admin/SessionManagement";
+// import LogsManagement from "./components/admin/LogsManagement";
 import Redis from "./components/development/Redis";
-// import ImageUploader from "./components/dashboard/ImageUploader";
-import MetricManagement from "./components/admin/MetricManagement";
-// import DriveManager from "./components/dashboard/DriveManager";
-import EmailManagement from "./components/admin/EmailManagment";
+// // import ImageUploader from "./components/dashboard/ImageUploader";
+// import MetricManagement from "./components/admin/MetricManagement";
+// // import DriveManager from "./components/dashboard/DriveManager";
+// import EmailManagement from "./components/admin/EmailManagment";
+import BlogMaker from "./components/dashboard/BlogMaker";
 
 const Router = createBrowserRouter([
   {
@@ -42,14 +43,10 @@ const Router = createBrowserRouter([
                 path: "profile", // Nested inside Dashboard
                 element: <Profile />,
               },
-              // {
-              //   path: "images", // Nested inside Dashboard
-              //   element: <ImageUploader />,
-              // },
-              // {
-              //   path: "drives", // Nested inside Dashboard
-              //   element: <DriveManager />,
-              // },
+              {
+                path: "blogmakerstudio", // Nested inside Dashboard
+                element: <BlogMaker />,
+              },
               {
                 path: "admindashboard",
                 element: <PrivateRoute requiredPermissions={["view:admindashboard"]} />, // Protected admin dashboard
@@ -57,14 +54,14 @@ const Router = createBrowserRouter([
                   {
                     path: "",
                     element: <AdminDashboard />,
-                    children: [
-                      { path: "role-management", element: <RoleManagement /> },
-                      { path: "user-management", element: <UserManagement /> },
-                      { path: "log-management", element: <LogsManagement /> },
-                      { path: "session-management", element: <SessionManagement /> },
-                      { path: "metrics-management", element: <MetricManagement /> },
-                      {path:"email-management", element: <EmailManagement/>}
-                    ],
+                    // children: [
+                    //   { path: "role-management", element: <RoleManagement /> },
+                    //   { path: "user-management", element: <UserManagement /> },
+                    //   { path: "log-management", element: <LogsManagement /> },
+                    //   { path: "session-management", element: <SessionManagement /> },
+                    //   { path: "metrics-management", element: <MetricManagement /> },
+                    //   {path:"email-management", element: <EmailManagement/>}
+                    // ],
                     errorElement: <Error />,
                   },
                 ],
