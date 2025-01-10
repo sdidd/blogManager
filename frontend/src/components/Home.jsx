@@ -1,15 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Locations from "./home/Locations";
+import API from "../api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import ReactMarkdown from "react-markdown";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { useSwipeable } from "react-swipeable";
+import "../css/Home.css";
+import "../css/NavigationButtons.css";
 
 const Home = () => {
+  const [blogs, setBlogs] = useState([]); // Store multiple blogs
+  const [loading, setLoading] = useState(true); // Loading state
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current blog index
+  const [sortType, setSortType] = useState("recent"); // Sorting dropdown state
+
+  const fetchBlogs = async () => {
+    try {
+      const res = await API.get(`/api/blog/home?sort=${sortType}&limit=10`); // Fetch blogs with sort and limit
+      setBlogs(res.data);
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs(); // Fetch blogs initially
+  }, [sortType]); // Re-fetch blogs when sortType changes
+
+  // Move to the next blog
+  const nextBlog = () => {
+    if (currentIndex < blogs.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
+  // Move to the previous blog
+  const prevBlog = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prevIndex) => prevIndex - 1);
+    }
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => nextBlog(),
+    onSwipedRight: () => prevBlog(),
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
+  // Render content when loading
+  if (loading) {
+    return <Skeleton height={200} />;
+  }
+
   return (
-    <>
+    <div>
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
         <div className="container-fluid">
           <a className="navbar-brand fw-bold text-primary" href="/">
-            Project Pineapple
+            Blogosphere
           </a>
           <button
             className="navbar-toggler"
@@ -24,27 +77,25 @@ const Home = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto text-center">
+              {/* <li className="nav-item dropdown">
+                <button className="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  {sortType === "recent" ? "Recent Blogs" : "Popular Blogs"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("recent")}>
+                      Recent
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("popular")}>
+                      Popular
+                    </button>
+                  </li>
+                </ul>
+              </li> */}
               <li className="nav-item">
-                <a className="nav-link" href="#about">
-                  About
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#locations">
-                  Features
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#contact">
-                  Contact
-                </a>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/dashboard"
-                  className="btn btn-primary ms-2"
-                  style={{ whiteSpace: "nowrap" }}
-                >
+                <Link to="/dashboard" className="btn mt-lg-0 dashboard-btn">
                   Dashboard
                 </Link>
               </li>
@@ -53,99 +104,68 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <header className="bg-dark text-white text-center py-5">
-        <div className="container-fluid px-3">
-          <h1 className="display-4 fw-bold">Welcome to Project Pineapple</h1>
-          <p className="lead">
-            The open-source platform for sharing and accessing courses freely. Share
-            knowledge, learn without limits, and earn achievements!
-          </p>
-          <a href="#about" className="btn btn-outline-primary btn-lg">
-            Learn More
-          </a>
-        </div>
-      </header>
-
-      {/* About Us Section */}
-      <section id="about" className="py-5 bg-secondary text-white">
-        <div className="container text-center px-4">
-          <h2 className="fw-bold mb-4">About Project Pineapple</h2>
-          <p className="lead">
-            Project Pineapple is a futuristic web app designed to democratize education. Anyone can upload
-            courses or register for courses for free. Forget about expensive certifications—focus on
-            gaining knowledge and earning achievements to showcase your learning journey.
-          </p>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-5">
-        <div className="container">
-          <h2 className="fw-bold mb-4 text-center">Features</h2>
-          <div className="row g-4">
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Free Courses</h3>
-                <p>Access a wide variety of courses without any cost. Knowledge for everyone!</p>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Upload Your Courses</h3>
-                <p>Share your expertise with the world. Contribute to the learning community.</p>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Achievements</h3>
-                <p>Earn badges and achievements to mark your progress and skills.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Locations Section */}
-      <Locations />
-
-      {/* Contact Us Section */}
-      <section id="contact" className="py-5 bg-secondary text-white">
-        <div className="container text-center px-4">
-          <h2 className="fw-bold mb-4">Contact Us</h2>
-          <p className="lead">
-            Have questions? We're here to help. Reach out to us, and let's make education accessible to all.
-          </p>
-          <div className="row justify-content-center">
-            <div className="col-md-8 col-lg-6">
-              <form>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Your Name
-                  </label>
-                  <input type="text" className="form-control" id="name" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Your Email
-                  </label>
-                  <input type="email" className="form-control" id="email" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="message" className="form-label">
-                    Your Message
-                  </label>
-                  <textarea className="form-control" id="message" rows="3"></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary w-100">
-                  Submit
+      {/* Blog Section */}
+      <section className="mt-4" {...handlers}>
+        <div className="container text-center">
+          {/* Single Blog Display */}
+          {blogs.length > 0 && (
+            <div className="card shadow">
+              <div className="dropdown position-absolute top-0 start-100 translate-middle badge">
+                <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  {sortType === "recent" ? "Recent Blogs" : "Popular Blogs"}
                 </button>
-              </form>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("recent")}>
+                      Recent
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("popular")}>
+                      Popular
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div className="card-body">
+                <h5 className="card-title">{blogs[currentIndex].title}</h5>
+                <div
+                  className="card-text"
+                  style={{
+                    margin: "0 auto", // Center the content
+                    height: "600px", // Reduce height
+                    overflowY: "auto",
+                    padding: "10px",
+                  }}
+                >
+                  <ReactMarkdown>{blogs[currentIndex].content}</ReactMarkdown>
+                </div>
+              </div>
+              <div className="card-footer text-muted">
+                {blogs[currentIndex].likes} Likes | {blogs[currentIndex].comments.length} Comments |{" "}
+                {blogs[currentIndex].views} Views
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <button
+            className="btn btn-outline-secondary navigation-button position-fixed start-0 top-50 translate-middle-y"
+            onClick={prevBlog}
+            disabled={currentIndex === 0}
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            className="btn btn-outline-secondary navigation-button position-fixed end-0 top-50 translate-middle-y"
+            onClick={nextBlog}
+            disabled={currentIndex === blogs.length - 1}
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

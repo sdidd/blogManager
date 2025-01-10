@@ -81,7 +81,7 @@ router.post("/login", async (req, res) => {
 // Register Route
 router.post("/register", async (req, res) => {
   try {
-    const { username, age, location, image, branch, email, role, data, fees } = req.body;
+    const { username, age, image, email, role, data } = req.body;
 
     // Validate required fields
     if (!data || !data.password || !data.name) {
@@ -92,12 +92,9 @@ router.post("/register", async (req, res) => {
     const user = new User({
       username,
       age,
-      location,
       image,
-      branch,
       role,
       email,
-      fees,
       data: { ...data },
     });
 
@@ -197,7 +194,7 @@ router.get("/getPermissions", authMiddleware, async (req, res) => {
 
 // Refresh Token Route
 
-router.post("/refresh-token", authMiddleware, async (req, res) => {
+router.post("/refresh-token", async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
@@ -260,16 +257,20 @@ router.post("/refresh-token", authMiddleware, async (req, res) => {
 // Check Username Availability
 router.get("/check-username/:username", async (req, res) => {
   const { username } = req.params;
-
+  console.log(username);
+  
   if (!username) {
+    console.log("Username is required");
     return res.status(400).json({ error: "Username is required" });
   }
 
   try {
+    console.log("Checking username availability");
     const userExists = await User.findOne({ username });
 
     if (userExists) {
-      return res.status(409).json({ error: "Username is already taken" });
+      console.log("Username is already taken");
+      return res.status(309).json({ error: "Username is already taken" });
     }
 
     res.status(200).json({ message: "Username is available" });
@@ -291,7 +292,7 @@ router.get("/check-email/:email", async (req, res) => {
     const emailExists = await User.findOne({ email });
 
     if (emailExists) {
-      return res.status(409).json({ error: "Email is already registered" });
+      return res.status(309).json({ error: "Email is already registered" });
     }
 
     res.status(200).json({ message: "Email is available" });

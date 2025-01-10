@@ -1,0 +1,17 @@
+.card-text img {  
+  max-width: 100%;
+  height: auto;
+}
+
+.dashboard-btn {
+  margin-top: 10px;
+  background-color: rgba(31, 31, 198, 0.54);
+  color: #ffffff;
+  transition: background-color 0.3s, color 0.3s;
+  height: 100%; /* Assuming the navbar height is 100% of its container */
+}
+
+.dashboard-btn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}

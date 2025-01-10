@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 // import bootstrap from 'bootstrap';
 import './css/bootstrap.min.css'
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Includes Popper
+import "react-toastify/dist/ReactToastify.css";
 import router from "./Router";
 import { RouterProvider } from "react-router-dom";
 

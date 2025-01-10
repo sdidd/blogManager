@@ -5,6 +5,15 @@ const express = require("express");const router = express.Router();
 // Mock database or hardcoded latest update messages
 const latestUpdate = [
   {
+    version: "0.2.5",
+    changes: [
+      { id: "13", message: "Better UI", type: "add" },
+      { id: "14", message: "Fixed the register page", type: "fix" },
+      { id: "15", message: "Users can now upload blogs in markdown", type: "add" },
+      { id: "16", message: "Faster Loading", type: "add" },
+    ],
+  },
+  {
     version: "0.2.0",
     changes: [
       { id: "10", message: "Fixed the register page", type: "add" },

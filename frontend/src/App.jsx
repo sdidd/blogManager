@@ -9,6 +9,38 @@ const App = () => {
   const [showUpdates, setShowUpdates] = useState(true); // Controls update modal visibility
   const [version, setVersion] = useState("");
 
+  const validateToken = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/");
+      } else {
+        const response = await API.get("/auth/verifyToken");
+        if (response.status !== 200) {
+          const refreshResponse = await API.post("/auth/refresh-token");
+          if (refreshResponse.status === 200) {
+            localStorage.setItem("token", refreshResponse.data.token);
+          } else {
+            localStorage.removeItem("token");
+            navigate("/login");
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Token validation or refresh failed:", err);
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    validateToken();
+    const intervalId = setInterval(validateToken, 780000); // 780000 13 minutes in milliseconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
   // Fetch the latest update message
   const fetchUpdateMessage = async () => {
     try {
@@ -24,39 +56,6 @@ const App = () => {
   useEffect(() => {
     fetchUpdateMessage(); // Fetch when the app loads
   }, []);
-
-  useEffect(() => {
-    const validateAndRefreshToken = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          // Attempt to refresh the token
-          const response = await API.post("/auth/refresh-token");
-          if (response.status === 401) {
-            navigate("/login");
-          } else {
-            localStorage.setItem("token", response.data.token);
-          }
-        } else {
-          // Validate the current token
-          await API.get("/auth/verifyToken");
-        }
-
-        // Redirect to the dashboard if authenticated
-        if (location.pathname === "/login" || location.pathname === "/register") {
-          navigate("/dashboard");
-        }
-      } catch (err) {
-        console.error("Token validation or refresh failed:", err);
-        // Clear the localStorage and redirect to login
-        localStorage.removeItem("token");
-        navigate("/");
-      }
-    };
-
-    validateAndRefreshToken();
-  }, [navigate]);
 
   return (
     <>
@@ -116,9 +115,7 @@ const App = () => {
         </div>
       )}
 
-      <footer className="mt-auto text-center py-3 bg-light">
-        Copyright @ Pineapple Solutions
-      </footer>
+      <footer className="mt-auto text-center py-2 bg-light">Copyright @ Pineapple Solutions</footer>
     </>
   );
 };
