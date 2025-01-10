@@ -42,7 +42,11 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const fileKey = `images/${Date.now()}-${req.file.originalname}`;
+    // const { blogId } = req.body; // Receive blogId from frontend
+    const originalFileName = req.file.originalname;
+    const uniqueFileName = `${originalFileName}`; // Append blogId
+
+    const fileKey = `images/${uniqueFileName}`;
 
     const uploadParams = {
       Bucket: BUCKET_NAME,
@@ -55,13 +59,14 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
     return res.status(200).json({
       message: "File uploaded successfully to S3",
-      imageUrl: `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`,
+      imageUrl: `${process.env.CDN_BASE_URL}/${fileKey}`,
     });
   } catch (error) {
     console.error("Error uploading to S3:", error);
     return res.status(500).json({ error: "Failed to upload file" });
   }
 });
+
 
 /**
  * @route   GET /images

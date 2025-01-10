@@ -1,75 +1,17 @@
 import React, { useState, useEffect } from "react";import { useNavigate } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
+import { AiOutlineCheck } from "react-icons/ai";
 import API from "../api";
 import Logout from "./Logout";
+import roles from "../utils/roles";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState({ field: "", value: "" });
   const [showModal, setShowModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only JPG, JPEG, and PNG files are allowed.");
-      return;
-    }
-
-    // Validate file size (50KB - 300KB)
-    const fileSizeInKB = file.size / 1024;
-    if (fileSizeInKB < 50 || fileSizeInKB > 300) {
-      alert("File size must be between 50KB and 300KB.");
-      return;
-    }
-
-    setSelectedFile(file);
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      alert("Please select a file to upload.");
-      return;
-    }
-
-    // Revalidate file type and size
-    const allowedTypes = ["image/jpeg", "image/png"];
-    if (!allowedTypes.includes(selectedFile.type)) {
-      alert("Invalid file type.");
-      return;
-    }
-    const fileSizeInKB = selectedFile.size / 1024;
-    if (fileSizeInKB < 50 || fileSizeInKB > 300) {
-      alert("File size must be between 50KB and 300KB.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    try {
-      const response = await API.post("/user/uploadimage", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setUser((prevUser) => ({
-        ...prevUser,
-        image: response.data.url,
-      }));
-
-      setShowModal(false);
-      setSelectedFile(null);
-    } catch (err) {
-      console.error(err);
-      alert("Image upload failed. Please try again.");
-    }
-  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -85,9 +27,82 @@ const Profile = () => {
         }
       }
     };
-
     fetchProfile();
   }, [navigate]);
+
+  const validateField = async (field, value) => {
+    try {
+      if (field === "username") {
+        const res = await API.get(`/auth/check-username/${value}`);
+        if (res.status !== 200) return false;
+      }
+      if (field === "email") {
+        const res = await API.get(`/auth/check-email/${value}`);
+        if (res.status !== 200) return false;
+      }
+      return true;
+    } catch (error) {
+      console.error(`Validation error for ${field}:`, error);
+      return false;
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editing.field) return;
+
+    const isValid = await validateField(editing.field, editing.value);
+    if (!isValid) {
+      alert(`${editing.field === "username" ? "Username" : "Email"} is already taken!`);
+      return;
+    }
+
+    try {
+      await API.put("/user/update", { field: editing.field, value: editing.value });
+      setUser((prevUser) => ({ ...prevUser, [editing.field]: editing.value }));
+      setEditing({ field: "", value: "" });
+    } catch (err) {
+      console.error(err);
+      alert("Update failed. Please try again.");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const allowedTypes = ["image/jpeg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPG and PNG files are allowed.");
+      return;
+    }
+    const fileSizeInKB = file.size / 1024;
+    if (fileSizeInKB < 50 || fileSizeInKB > 300) {
+      alert("File size must be between 50KB and 300KB.");
+      return;
+    }
+    setSelectedFile(file);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await API.post("/user/uploadimage", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setUser((prevUser) => ({ ...prevUser, image: response.data.url }));
+      setShowModal(false);
+      setSelectedFile(null);
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed. Please try again.");
+    }
+  };
 
   if (error) {
     return <div className="text-danger text-center mt-4">{error}</div>;
@@ -136,29 +151,50 @@ const Profile = () => {
         </div>
         <hr />
 
-        {/* Basic Info */}
-        <h5>Basic Information</h5>
+        {/* Editable Info */}
+        <h5>Profile Information</h5>
         <ul className="list-group mb-4">
-          <li className="list-group-item">
-            <strong>Username:</strong> {user.username}
-          </li>
-          <li className="list-group-item">
-            <strong>Email:</strong> {user.email}
-          </li>
-          <li className="list-group-item">
-            <strong>Age:</strong> {user.age}
-          </li>
-          <li className="list-group-item">
-            <strong>Location:</strong> {user.location}
-          </li>
-          <li className="list-group-item">
-            <strong>Branch:</strong> {user.branch}
-          </li>
-          <li className="list-group-item">
-            <strong>Standard:</strong> {user.standard}
-          </li>
-        </ul>
+          {[
+            { label: "Username", key: "username" },
+            { label: "Email", key: "email" },
+            { label: "Age", key: "age" },
+            { label: "Full Name", key: "data.name" },
+          ].map((item) => (
+            <li key={item.key} className="list-group-item d-flex justify-content-between align-items-center">
+              <span>
+                <strong>{item.label}:</strong>{" "}
+                {editing.field === item.key ? (
+                  <input
+                    type="text"
+                    value={editing.value}
+                    onChange={(e) => setEditing({ ...editing, value: e.target.value })}
+                  />
+                ) : item.key.includes(".") ? (
+                  user.data[item.key.split(".")[1]]
+                ) : (
+                  user[item.key]
+                )}
+              </span>
 
+              <div>
+                {editing.field === item.key ? (
+                  <AiOutlineCheck size={25} style={{ cursor: "pointer", color: "green" }} onClick={handleSave} />
+                ) : (
+                  <CiEdit
+                    size={25}
+                    style={{ cursor: "pointer", color: "#555" }}
+                    onClick={() =>
+                      setEditing({
+                        field: item.key,
+                        value: item.key.includes(".") ? user.data[item.key.split(".")[1]] : user[item.key],
+                      })
+                    }
+                  />
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
         {/* Role & Permissions */}
         <h5>Role & Permissions</h5>
         <ul className="list-group mb-4">
@@ -167,16 +203,15 @@ const Profile = () => {
           </li>
           <li className="list-group-item">
             <strong>Permissions:</strong>{" "}
-            {user.role?.permissions?.length ? user.role.permissions.join(", ") : "No permissions assigned"}
+            {user.role?.permissions?.length && user.role.name === roles.admin
+              ? user.role.permissions.join(", ")
+              : "No permissions assigned"}
           </li>
         </ul>
 
         {/* Account Details */}
         <h5>Account Details</h5>
-        <ul className="list-group mb-4">
-          <li className="list-group-item">
-            <strong>ID:</strong> {user._id}
-          </li>
+        <ul className="list-group">
           <li className="list-group-item">
             <strong>Token Version:</strong> {user.tokenVersion}
           </li>
@@ -184,65 +219,25 @@ const Profile = () => {
             <strong>Verified:</strong> {user.isVerified ? "Yes" : "No"}
           </li>
         </ul>
-
-        {/* Fees Information */}
-        <h5>Fees Information</h5>
-        <ul className="list-group">
-          <li className="list-group-item">
-            <strong>Paid:</strong> {user.fees.paid ? "Yes" : "No"}
-          </li>
-          <li className="list-group-item">
-            <strong>Remaining:</strong> ${user.fees.remaining}
-          </li>
-          <li className="list-group-item">
-            <strong>Total:</strong> ${user.fees.total}
-          </li>
-          <li className="list-group-item">
-            <strong>Last Date:</strong> {new Date(user.fees.lastDate).toLocaleDateString()}
-          </li>
-        </ul>
       </div>
 
-      {/* Bootstrap Modal */}
+      {/* Upload Modal */}
       {showModal && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-          aria-labelledby="uploadModalLabel"
-          aria-hidden="true"
-        >
+        <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="uploadModalLabel">
-                  Upload Profile Image
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={() => setShowModal(false)}
-                ></button>
+                <h5 className="modal-title">Upload Profile Image</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
               <div className="modal-body">
-                <input
-                  type="file"
-                  className="form-control"
-                  onChange={handleFileChange}
-                  accept=".jpg,.jpeg,.png" // Restrict file types
-                />
-                {selectedFile && (
-                  <p className="mt-2 text-info">
-                    Selected File: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
-                  </p>
-                )}
+                <input type="file" className="form-control" onChange={handleFileChange} />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
-                <button type="button" className="btn btn-primary" onClick={handleUpload}>
+                <button className="btn btn-primary" onClick={handleUpload}>
                   Upload
                 </button>
               </div>

@@ -22,10 +22,7 @@ mongoose
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, default: "NewUser" },
   age: { type: Number, default: 18 },
-  location: { type: String, default: "Unknown" },
   image: { type: String, default: defaultUserImage },
-  branch: { type: String, default: "General" },
-  standard: { type: Number, default: 11 },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true, default: "64a3fcd56e913f1a5ef9e001" },
   email: { type: String, required: true, unique: true },
   isVerified: { type: Boolean, default: false },
@@ -36,13 +33,7 @@ const userSchema = new mongoose.Schema({
     id: { type: Number, required: true, default: 0 },
     name: { type: String, required: true, default: "Default Name" },
     password: { type: String, required: true, default: "123456" },
-  },
-  fees: {
-    paid: { type: Boolean, default: false },
-    remaining: { type: Number, default: 0 },
-    total: { type: Number, default: 0 },
-    lastDate: { type: Date, default: () => new Date() },
-  },
+  }
 });
 
 // Hash password before saving

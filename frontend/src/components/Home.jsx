@@ -1,11 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBlog, FaPen, FaRegEdit, FaSearch } from "react-icons/fa";
-import { BsUpload, BsFileText } from "react-icons/bs";
+import API from "../api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import ReactMarkdown from "react-markdown";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { useSwipeable } from "react-swipeable";
+import "../css/Home.css";
+import "../css/NavigationButtons.css";
 
 const Home = () => {
+  const [blogs, setBlogs] = useState([]); // Store multiple blogs
+  const [loading, setLoading] = useState(true); // Loading state
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current blog index
+  const [sortType, setSortType] = useState("recent"); // Sorting dropdown state
+
+  const fetchBlogs = async () => {
+    try {
+      const res = await API.get(`/api/blog/home?sort=${sortType}&limit=10`); // Fetch blogs with sort and limit
+      setBlogs(res.data);
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs(); // Fetch blogs initially
+  }, [sortType]); // Re-fetch blogs when sortType changes
+
+  // Move to the next blog
+  const nextBlog = () => {
+    if (currentIndex < blogs.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
+  // Move to the previous blog
+  const prevBlog = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prevIndex) => prevIndex - 1);
+    }
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => nextBlog(),
+    onSwipedRight: () => prevBlog(),
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
+  // Render content when loading
+  if (loading) {
+    return <Skeleton height={200} />;
+  }
+
   return (
-    <>
+    <div>
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
         <div className="container-fluid">
@@ -25,24 +77,26 @@ const Home = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto text-center">
+              {/* <li className="nav-item dropdown">
+                <button className="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  {sortType === "recent" ? "Recent Blogs" : "Popular Blogs"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("recent")}>
+                      Recent
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("popular")}>
+                      Popular
+                    </button>
+                  </li>
+                </ul>
+              </li> */}
               <li className="nav-item">
-                <a className="nav-link" href="#explore">
-                  Explore Blogs
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#about">
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/dashboard"
-                  className="btn btn-primary ms-2"
-                  style={{ whiteSpace: "nowrap" }}
-                >
-                  <FaPen className="me-2" />
-                  Write a Blog
+                <Link to="/dashboard" className="btn mt-lg-0 dashboard-btn">
+                  Dashboard
                 </Link>
               </li>
             </ul>
@@ -50,121 +104,68 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <header className="bg-dark text-white text-center py-5">
-        <div className="container-fluid px-3">
-          <h1 className="display-4 fw-bold">Welcome to Blogosphere</h1>
-          <p className="lead">
-            Share your thoughts, ideas, and stories with the world. Join our community of writers and readers!
-          </p>
-          <a href="#explore" className="btn btn-outline-primary btn-lg">
-            <FaSearch className="me-2" />
-            Explore Blogs
-          </a>
-        </div>
-      </header>
-
-      {/* About Us Section */}
-      <section id="about" className="py-5 bg-secondary text-white">
-        <div className="container text-center px-4">
-          <h2 className="fw-bold mb-4">About Blogosphere</h2>
-          <p className="lead">
-            Blogosphere is a platform for everyone to express themselves. Share your blogs, read others' stories, and connect with like-minded individuals.
-            No restrictions except for content that violates laws or community guidelines.
-          </p>
-        </div>
-      </section>
-
-      {/* Explore Blogs Section */}
-      <section id="explore" className="py-5">
-        <div className="container">
-          <h2 className="fw-bold mb-4 text-center">Explore Blogs</h2>
-          <div className="row g-4">
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Tech Blogs</h3>
-                <p>Latest in tech, gadgets, software, and more.</p>
-                <Link to="/blogs/tech" className="btn btn-outline-light">
-                  <BsFileText className="me-2" />
-                  Read Now
-                </Link>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Lifestyle Blogs</h3>
-                <p>Explore lifestyle trends, wellness tips, and personal stories.</p>
-                <Link to="/blogs/lifestyle" className="btn btn-outline-light">
-                  <BsFileText className="me-2" />
-                  Read Now
-                </Link>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="p-4 bg-dark text-white text-center rounded h-100">
-                <h3 className="fw-bold">Travel Blogs</h3>
-                <p>Discover new places, cultures, and adventures.</p>
-                <Link to="/blogs/travel" className="btn btn-outline-light">
-                  <BsFileText className="me-2" />
-                  Read Now
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Upload Blog Section */}
-      <section id="upload" className="py-5 bg-light">
+      {/* Blog Section */}
+      <section className="mt-4" {...handlers}>
         <div className="container text-center">
-          <h2 className="fw-bold mb-4">Upload Your Blog</h2>
-          <p className="lead">
-            Have something to share? Upload your blog and inspire others! It’s quick and easy.
-          </p>
-          <a href="/dashboard/blogmakerstudio" className="btn btn-primary">
-            <BsUpload className="me-2" />
-            Upload Your Blog
-          </a>
-        </div>
-      </section>
-
-      {/* Contact Us Section */}
-      <section id="contact" className="py-5 bg-secondary text-white">
-        <div className="container text-center px-4">
-          <h2 className="fw-bold mb-4">Contact Us</h2>
-          <p className="lead">
-            Have questions or feedback? Reach out to us and help make Blogosphere better!
-          </p>
-          <div className="row justify-content-center">
-            <div className="col-md-8 col-lg-6">
-              <form>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Your Name
-                  </label>
-                  <input type="text" className="form-control" id="name" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Your Email
-                  </label>
-                  <input type="email" className="form-control" id="email" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="message" className="form-label">
-                    Your Message
-                  </label>
-                  <textarea className="form-control" id="message" rows="3"></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary w-100">
-                  Submit
+          {/* Single Blog Display */}
+          {blogs.length > 0 && (
+            <div className="card shadow">
+              <div className="dropdown position-absolute top-0 start-100 translate-middle badge">
+                <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  {sortType === "recent" ? "Recent Blogs" : "Popular Blogs"}
                 </button>
-              </form>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("recent")}>
+                      Recent
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => setSortType("popular")}>
+                      Popular
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div className="card-body">
+                <h5 className="card-title">{blogs[currentIndex].title}</h5>
+                <div
+                  className="card-text"
+                  style={{
+                    margin: "0 auto", // Center the content
+                    height: "600px", // Reduce height
+                    overflowY: "auto",
+                    padding: "10px",
+                  }}
+                >
+                  <ReactMarkdown>{blogs[currentIndex].content}</ReactMarkdown>
+                </div>
+              </div>
+              <div className="card-footer text-muted">
+                {blogs[currentIndex].likes} Likes | {blogs[currentIndex].comments.length} Comments |{" "}
+                {blogs[currentIndex].views} Views
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <button
+            className="btn btn-outline-secondary navigation-button position-fixed start-0 top-50 translate-middle-y"
+            onClick={prevBlog}
+            disabled={currentIndex === 0}
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            className="btn btn-outline-secondary navigation-button position-fixed end-0 top-50 translate-middle-y"
+            onClick={nextBlog}
+            disabled={currentIndex === blogs.length - 1}
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

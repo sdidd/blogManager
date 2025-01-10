@@ -17,6 +17,11 @@ const Dashboard = () => {
     if(location.pathname !== "/dashboard"){
       setShowDefaultContent(false);
     }
+  
+  }, [location.pathname])
+  
+
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await API.get("/user/profile");

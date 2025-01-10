@@ -31,6 +31,7 @@ router.use((req, res, next) => {
     "/profile": ["view:profile"],
     "/results": ["view:results"],
     "/uploadimage": ["update:profile"],
+    "/update": ["update:profile"],
   };
 
   if (permissionMap[req.path]) {
@@ -99,6 +100,16 @@ router.post("/uploadimage", upload.single("file"), async (req, res) => {
   } catch (error) {
     console.error("Error during image upload:", error);
     res.status(500).json({ error: "Internal server error.", details: error.message });
+  }
+});
+
+router.put("/update", async (req, res) => {
+  const { field, value } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id, { [field]: value }, { new: true });  
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

@@ -27,53 +27,61 @@ const Login = () => {
   };
 
   return (
-    <div className="container mt-5 col-sm-5 mx-auto">
-      <Link to="/" className="vertical-bar">
-        <IoHome />
-        <span>Home</span>
-      </Link>
-      <h1 className="text-center mb-4">Login</h1>
-      {error && (
-        <p style={{ color: "red" }} className="text-center">
-          {error}
-        </p>
-      )}
-      <form onSubmit={handleLogin} className="w-50 mx-auto">
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">
-            Username:
-          </label>
-          <input
-            id="username"
-            type="text"
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div className="container d-flex align-items-center" style={{ height: "100vh" }}>
+      <div className="row w-100">
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
         </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password:
-          </label>
-          <input
-            id="password"
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
+          <div className="card p-4 shadow mx-auto" style={{ width: "100%", maxWidth: "400px" }}>
+            <Link to="/" className="vertical-bar mb-3">
+              <IoHome />
+              <span>Home</span>
+            </Link>
+            <h1 className="text-center mb-4">Login</h1>
+            {error && (
+              <p style={{ color: "red" }} className="text-center">
+                {error}
+              </p>
+            )}
+            <form onSubmit={handleLogin} className="w-100 mx-auto">
+              <div className="mb-3">
+                <label htmlFor="username" className="form-label">
+                  Username:
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  className="form-control"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Password:
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-100 mb-3">
+                Login
+              </button>
+              <div className="text-center">
+                <Link to="/register" className="btn btn-link">
+                  New? Sign Up Here
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
-        <button type="submit" className="btn btn-primary w-100 mb-3">
-          Login
-        </button>
-        <div className="text-center">
-          <Link to="/register" className="btn btn-link">
-            New Student? Register Here
-          </Link>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };
