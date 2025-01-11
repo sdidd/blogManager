@@ -9,3 +9,15 @@ node_modules/*
 redis-binaries
 
 */package-lock.json
+
+/frontend/package-lock.json
+/frontend/node_modules
+/EmailBackend/node_modules
+/EmailBackend/combined-log.txt
+/EmailBackend/package-lock.json
+/CDN/combined-log.txt
+/Backend/combined-log.txt
+/Backend/.env
+/Backend/node_modules
+/Backend/package-lock.json
+/start-services.ps1
