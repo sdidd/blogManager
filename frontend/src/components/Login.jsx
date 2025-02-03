@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";import { Link, useNavigate } from "react-router-dom";
 import "../css/register.css";
 import { IoHome } from "react-icons/io5";
 
@@ -27,27 +26,18 @@ const Login = () => {
   };
 
   return (
-    <div className="container d-flex align-items-center" style={{ height: "100vh" }}>
+    <div className="container d-flex align-items-center p-0 mx-0" style={{ height: "100vh" }}>
       <div className="row w-100">
         <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-        </div>
-        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
           <div className="card p-4 shadow mx-auto" style={{ width: "100%", maxWidth: "400px" }}>
-            <Link to="/" className="vertical-bar mb-3">
-              <IoHome />
-              <span>Home</span>
-            </Link>
             <h1 className="text-center mb-4">Login</h1>
             {error && (
               <p style={{ color: "red" }} className="text-center">
                 {error}
               </p>
             )}
-            <form onSubmit={handleLogin} className="w-100 mx-auto">
-              <div className="mb-3">
-                <label htmlFor="username" className="form-label">
-                  Username:
-                </label>
+            <form onSubmit={handleLogin}>
+              <div className="mb-3 form-floating">
                 <input
                   id="username"
                   type="text"
@@ -55,20 +45,21 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
+                  placeholder="Username"
                 />
+                <label>Username</label>
               </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password:
-                </label>
+              <div className="mb-3 form-floating">
                 <input
                   id="password"
                   type="password"
                   className="form-control"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
                   required
                 />
+                <label>Password</label>
               </div>
               <button type="submit" className="btn btn-primary w-100 mb-3">
                 Login
@@ -79,8 +70,13 @@ const Login = () => {
                 </Link>
               </div>
             </form>
+            <Link to="/" className="vertical-bar position-absolute start-100 translate-middle-y">
+              <IoHome />
+              <span>Home</span>
+            </Link>
           </div>
         </div>
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center"></div>
       </div>
     </div>
   );

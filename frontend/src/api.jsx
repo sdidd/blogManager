@@ -8,7 +8,12 @@ const API = axios.create({
 export const emailAPI = axios.create({
   baseURL: import.meta.env.NODE_ENV == "development"?"http://localhost:4001":import.meta.env.VITE_APP_EMAIL_BACKEND_BASE_URL,
   withCredentials: true, // Enables sending cookies
-})
+});
+
+export const blogAPI = axios.create({
+  baseURL: import.meta.env.NODE_ENV == "development"?"http://localhost:4002":import.meta.env.VITE_APP_BLOG_BACKEND_BASE_URL,
+  withCredentials: true, // Enables sending cookies
+});
 
 //Middleware processing of API request
 API.interceptors.request.use((config) => {
@@ -21,7 +26,19 @@ API.interceptors.request.use((config) => {
   }
   return config;
 });
+
 emailAPI.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    if(import.meta.env.NODE_ENV == "development"){
+      console.log('Token attached:', config.headers.Authorization);
+    }
+  }
+  return config;
+});
+
+blogAPI.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

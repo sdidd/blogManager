@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,13 +9,31 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/BlogMaker.css";
 
 const BlogMaker = () => {
+  let { blogId } = useParams(); // Extract blogId from URL
+  console.log("Blog ID:", blogId);
+  
   const navigate = useNavigate();
   const LOCAL_STORAGE_KEY = "unsavedBlog";
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [blogId, setBlogId] = useState(null);
-  const [tempImages, setTempImages] = useState([]); // Temporary image storage
+  const [tempImages, setTempImages] = useState([]);
+
+  useEffect(() => {
+    if (blogId) {
+      API.post("/api/blog/getBlogById", { blogId })
+        .then((response) => {
+          const blog = response.data;
+          setTitle(blog.title || "");
+          setContent(blog.content || "");
+          setTempImages(blog.images || []);
+        })
+        .catch((error) => {
+          console.error("Error fetching blog:", error);
+          toast.error("Failed to load blog.");
+        });
+    }
+  }, [blogId]); // Only fetch data when blogId changes
 
   console.log("Component Rendered");
 
@@ -106,7 +124,7 @@ const BlogMaker = () => {
       });
 
       toast.success(status === "published" ? "Blog published!" : "Draft saved!");
-      setBlogId(response.data.blog._id);
+      blogId = response.data.blog._id; // Update blogId after saving
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (error) {
       console.error("Error saving blog:", error);
@@ -152,6 +170,23 @@ const BlogMaker = () => {
 
       <div className="preview-section">
         <h3>Preview</h3>
+        <ReactMarkdown
+          children={title}
+          remarkPlugins={[remarkGfm]}
+          components={{
+            img: ({ node, ...props }) => (
+              <img
+                {...props}
+                style={{
+                  maxWidth: "100%",
+                  display: "block",
+                  margin: "10px 0",
+                }}
+                alt={props.alt || "Markdown Image"}
+              />
+            ),
+          }}
+        />
         <ReactMarkdown
           children={content}
           remarkPlugins={[remarkGfm]}
