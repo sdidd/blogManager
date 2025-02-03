@@ -21,6 +21,7 @@ import Redis from "./components/development/Redis";
 // // import DriveManager from "./components/dashboard/DriveManager";
 // import EmailManagement from "./components/admin/EmailManagment";
 import BlogMaker from "./components/dashboard/BlogMaker";
+import BlogManagement from "./components/dashboard/BlogManagement";
 
 const Router = createBrowserRouter([
   {
@@ -44,8 +45,12 @@ const Router = createBrowserRouter([
                 element: <Profile />,
               },
               {
-                path: "blogmakerstudio", // Nested inside Dashboard
+                path: "blogmakerstudio/:blogId?", // Use :blogId? to make it optional
                 element: <BlogMaker />,
+              },
+              {
+                path: "blogmanager", // Nested inside Dashboard
+                element: <BlogManagement />,
               },
               {
                 path: "admindashboard",

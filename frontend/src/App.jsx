@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import API from "./api";
 
 const App = () => {
@@ -60,9 +59,7 @@ const App = () => {
   return (
     <>
       <div className="d-flex flex-column min-vh-100">
-        <main>
-          <Outlet /> {/* Render nested routes */}
-        </main>
+        <Outlet /> {/* Render nested routes */}
       </div>
 
       {/* Update Message Box - Shows on all pages */}

@@ -1,8 +1,6 @@
 .vertical-bar {
-    position: fixed;
     top: 50%;
-    left: 0;
-    transform: translateY(-50%);
+    right: 0;
     width: 40px;
     height: 400px;
     background-color: #49729d; /* Blue color */
@@ -15,7 +13,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000; /* Ensure it's above other elements */
-    border-radius: 0 5px 5px 0;
+    border-radius: 50px;
   }
   
   .vertical-bar:hover {

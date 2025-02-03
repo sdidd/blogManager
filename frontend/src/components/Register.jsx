@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/register.css";
 import { IoHome } from "react-icons/io5";
 
@@ -109,94 +110,92 @@ const Register = () => {
   };
 
   return (
-    <div className="container mt-4 col-sm-12 col-md-8 col-lg-6">
-      {/* Vertical Bar */}
-      <Link to="/" className="vertical-bar">
-        <IoHome />
-        <span>Home</span>
-      </Link>
-
-      <div className="card shadow p-4 d-flex flex-row">
-        <div className="w-50 text-center align-self-center">
-          <h1 className="display-4">Sign Up</h1>
+    <div className="container d-flex align-items-center" style={{ height: "100vh" }}>
+      <div className="row w-100">
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
+          <div className="card shadow p-4" style={{ width: "100%", maxWidth: "400px" }}>
+            <h1 className="text-center mb-4">Sign Up</h1>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            {success && <p style={{ color: "green" }}>{success}</p>}
+            <form onSubmit={handleRegister}>
+              <div className="mb-3 form-floating">
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Username"
+                  required
+                />
+                <label>Username</label>
+                {usernameError && <p style={{ color: "red", fontSize: "0.9em" }}>{usernameError}</p>}
+              </div>
+              <div className="mb-3 form-floating">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Email"
+                  required
+                />
+                <label>Email</label>
+                {emailError && <p style={{ color: "red", fontSize: "0.9em" }}>{emailError}</p>}
+              </div>
+              <div className="mb-3 form-floating">
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Password"
+                  required
+                />
+                <label>Password</label>
+              </div>
+              <div className="mb-3 form-floating">
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Confirm Password"
+                  required
+                />
+                <label>Confirm Password</label>
+              </div>
+              <div className="mb-3 form-floating">
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Full Name"
+                  required
+                />
+                <label>Name</label>
+              </div>
+              <div className="d-flex justify-content-center gap-3">
+                <button type="submit" className="btn btn-primary">
+                  Register
+                </button>
+                <Link className="btn btn-outline-secondary" to="/login">
+                  Go Back
+                </Link>
+              </div>
+            </form>
+            <Link to="/" className="vertical-bar position-absolute start-100 translate-middle-y">
+              <IoHome />
+              <span>Home</span>
+            </Link>
+          </div>
         </div>
-        <div className="vr"></div>
-        <div className="w-100 p-3">
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
-          <form onSubmit={handleRegister}>
-            <div className="mb-3 form-floating">
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Username"
-                required
-              />
-              <label>Username</label>
-              {usernameError && <p style={{ color: "red", fontSize: "0.9em" }}>{usernameError}</p>}
-            </div>
-            <div className="mb-3 form-floating">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Email"
-                required
-              />
-              <label>Email</label>
-              {emailError && <p style={{ color: "red", fontSize: "0.9em" }}>{emailError}</p>}
-            </div>
-            <div className="mb-3 form-floating">
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Password"
-                required
-              />
-              <label>Password</label>
-            </div>
-            <div className="mb-3 form-floating">
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Confirm Password"
-                required
-              />
-              <label>Confirm Password</label>
-            </div>
-            <div className="mb-3 form-floating">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Full Name"
-                required
-              />
-              <label>Name</label>
-            </div>
-            <div className="d-flex justify-content-center gap-3">
-              <button type="submit" className="btn btn-primary">
-                Register
-              </button>
-              <Link className="btn btn-outline-secondary" to="/login">
-                Go Back
-              </Link>
-            </div>
-          </form>
-        </div>
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center"></div>
       </div>
     </div>
   );

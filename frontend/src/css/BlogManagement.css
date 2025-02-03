@@ -1,0 +1,28 @@
+.blog-card {
+    transition: transform 0.2s ease-in-out;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .blog-card img {
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .card-body {
+    padding: 15px;
+  }
+  
+  .card-title {
+    font-weight: bold;
+  }
+  
+  .btn-group button {
+    flex: 1;
+    margin: 2px;
+  }
+  

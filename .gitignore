@@ -21,3 +21,5 @@ redis-binaries
 /Backend/node_modules
 /Backend/package-lock.json
 /start-services.ps1
+/.venv
+/electron-app/node_modules
